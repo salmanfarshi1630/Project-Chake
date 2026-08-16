@@ -154,18 +154,26 @@
         .header-left-actions {
             position: absolute;
             left: 16px;
-            display: none;
+            display: flex;
+            align-items: center;
+            z-index: 10;
         }
 
         .website-link {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--primary);
             text-decoration: none;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border: 1px solid var(--primary);
             border-radius: 20px;
             font-weight: 600;
             transition: all 0.2s;
+            text-align: center;
+            line-height: 1.2;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .website-link:hover {
@@ -499,7 +507,12 @@
 
     <!-- Header Bar -->
     <header class="app-header">
-        <div class="header-left-actions"></div>
+        <div class="header-left-actions">
+            <a href="https://salmanfarshi1630.github.io/" target="_blank" class="website-link">
+                <span style="font-size: 0.7rem; line-height: 1.1;">আমার</span>
+                <span style="font-size: 0.7rem; line-height: 1.1;" data-translate="myWebsite">ওয়েবসাইট</span>
+            </a>
+        </div>
         <div class="header-brand">
             <div class="logo-container" id="logoContainer">
                 <img src="https://i.ibb.co.com/HDkwQdny/logo.png" alt="লোগো" id="appLogoImg">
@@ -510,7 +523,6 @@
             </div>
         </div>
         <div class="header-actions">
-            <a href="https://salmanfarshi1630.github.io/" target="_blank" class="website-link" data-translate="myWebsite">আমার ওয়েবসাইট</a>
             <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle Theme">
                 <span id="themeIcon">🌙</span>
             </button>
@@ -726,7 +738,7 @@
             <div class="card">
                 <h4 style="font-size:0.95rem; margin-bottom:8px;" data-translate="categoryMgmtTitle">ক্যাটাগরি ব্যবস্থাপনা</h4>
                 <form id="addCategoryForm" class="inline-form">
-                    <input type="text" id="newCategoryName" placeholder="নতুন ক্যাটাগরির নাম..." data-translate-placeholder="newCategoryPlaceholder" class="form-control" required>
+                    <input type="text" id="newCategoryName" placeholder="নতুন ক্যাটারির নাম..." data-translate-placeholder="newCategoryPlaceholder" class="form-control" required>
                     <button type="submit" class="btn btn-primary" data-translate="addBtn">যোগ</button>
                 </form>
                 <div id="manageCategoriesList" class="tag-list"></div>
@@ -908,7 +920,7 @@
             const TRANSLATIONS = {
                 bn: {
                     appName: "হাত-খরচ",
-                    myWebsite: "আমার ওয়েবসাইট",
+                    myWebsite: "ওয়েবসাইট",
                     myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "পরম করুণাময়, অতি দয়ালু আল্লাহর নামে",
                     quranHeader: "📖 কুরআনের মহান উপদেশ",
@@ -1012,7 +1024,7 @@
                 },
                 ar: {
                     appName: "مصروفات شخصية",
-                    myWebsite: "موقعي الإلكتروني",
+                    myWebsite: "موقع الكتروني",
                     myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "بسم الله الرحمن الرحيم",
                     quranHeader: "📖 نصيحة قرآنية عظيمة",
@@ -1116,7 +1128,7 @@
                 },
                 en: {
                     appName: "Hat-Khoroch",
-                    myWebsite: "My Website",
+                    myWebsite: "Website",
                     myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "In the name of Allah, the Most Gracious, the Most Merciful",
                     quranHeader: "📖 Great Quranic Advice",
