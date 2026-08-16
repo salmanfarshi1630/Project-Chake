@@ -107,7 +107,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin: 0 auto; /* লোগো মাঝে নেওয়ার জন্য */
+            margin: 0 auto;
         }
 
         .logo-container {
@@ -154,6 +154,7 @@
         .header-left-actions {
             position: absolute;
             left: 16px;
+            display: none;
         }
 
         .website-link {
@@ -498,22 +499,21 @@
 
     <!-- Header Bar -->
     <header class="app-header">
-        <div class="header-left-actions">
-            <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle Theme">
-                <span id="themeIcon">🌙</span>
-            </button>
-        </div>
+        <div class="header-left-actions"></div>
         <div class="header-brand">
             <div class="logo-container" id="logoContainer">
                 <img src="https://i.ibb.co.com/HDkwQdny/logo.png" alt="লোগো" id="appLogoImg">
             </div>
             <div class="header-title">
                 <h1 id="headerAppName" data-translate="appName">হাত-খরচ</h1>
-                <span class="subtitle">Personal Money Manager</span>
+                <span class="subtitle" data-translate="myWebsiteSub">আমার ওয়েবসাইট</span>
             </div>
         </div>
         <div class="header-actions">
             <a href="https://salmanfarshi1630.github.io/" target="_blank" class="website-link" data-translate="myWebsite">আমার ওয়েবসাইট</a>
+            <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle Theme">
+                <span id="themeIcon">🌙</span>
+            </button>
         </div>
     </header>
 
@@ -540,15 +540,28 @@
                 <div class="card stat-card expense-bg"><span class="card-label" data-translate="monthExpense">এই মাসের খরচ</span><h3 id="monthExpenseText">৳০</h3></div>
             </div>
 
-            <!-- Note Pad on Home Screen -->
-            <div class="section-header"><h3 data-translate="notepadTitle">নোট প্যাড (Quick Notes)</h3></div>
-            <div class="card">
-                <form id="noteForm" class="inline-form" style="margin-bottom: 12px;">
-                    <input type="text" id="noteInput" class="form-control" placeholder="জরুরি নোট লিখে রাখুন..." data-translate-placeholder="notePlaceholder" required>
-                    <button type="submit" class="btn btn-primary" data-translate="addBtn">যোগ</button>
-                </form>
-                <div id="notesList" class="item-list" style="max-height: 200px; overflow-y: auto;">
-                    <p id="emptyNoteMsg" style="text-align:center; color:var(--text-muted); font-size:0.85rem;" data-translate="noNotes">কোনো নোট নেই</p>
+            <!-- Loan & Debt on Home Screen -->
+            <div class="card" style="border: 1px solid var(--border-color);">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="p-3 rounded-lg text-center border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <p class="text-xs font-semibold" style="color: var(--text-muted);" data-translate="receivableTitle">আমি পাবো (পাওনা)</p>
+                        <p id="total-receivable" class="text-lg font-bold" style="color: var(--income-color);">৳০.০০</p>
+                    </div>
+                    <div class="p-3 rounded-lg text-center border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <p class="text-xs font-semibold" style="color: var(--text-muted);" data-translate="payableTitle">আমি দেবো (দেনা)</p>
+                        <p id="total-payable" class="text-lg font-bold" style="color: var(--expense-color);">৳০.০০</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-bold" style="color: var(--text-main);" data-translate="loanHeaderTitle">ধার ও দেনার হিসাব-নিকাশ</h3>
+                    <button id="open-loan-modal" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-700 transition-all" data-translate="newLoanBtn">
+                        + নতুন ধার/পাওনা
+                    </button>
+                </div>
+
+                <div id="loan-list" class="space-y-2">
+                    <p id="empty-msg" class="text-center py-2 text-xs" style="color: var(--text-muted);" data-translate="noLoans">এখনো কোনো ধার-দেনার হিসাব নেই</p>
                 </div>
             </div>
         </section>
@@ -594,32 +607,16 @@
             <div id="transactionList" class="item-list"></div>
         </section>
 
-        <!-- LOAN / DEBT VIEW -->
+        <!-- NOTE VIEW (Replacing Loan View position) -->
         <section id="loanView" class="app-view">
-            <div class="max-w-xl mx-auto bg-white rounded-xl shadow-md p-4 sm:p-6 text-gray-800" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
-                <!-- Summary Section -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="p-4 rounded-lg text-center border" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                        <p class="text-sm font-semibold" style="color: var(--text-muted);" data-translate="receivableTitle">আমি পাবো (পাওনা)</p>
-                        <p id="total-receivable" class="text-xl font-bold" style="color: var(--income-color);">৳০.০০</p>
-                    </div>
-                    <div class="p-4 rounded-lg text-center border" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                        <p class="text-sm font-semibold" style="color: var(--text-muted);" data-translate="payableTitle">আমি দেবো (দেনা)</p>
-                        <p id="total-payable" class="text-xl font-bold" style="color: var(--expense-color);">৳০.০০</p>
-                    </div>
-                </div>
-
-                <!-- Header Action -->
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold" style="color: var(--text-main);" data-translate="loanHeaderTitle">ধার ও দেনার হিসাব-নিকাশ</h2>
-                    <button id="open-loan-modal" class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all" data-translate="newLoanBtn">
-                        + নতুন ধার/পাওনা
-                    </button>
-                </div>
-
-                <!-- Loan Item List -->
-                <div id="loan-list" class="space-y-3">
-                    <p id="empty-msg" class="text-center py-4" style="color: var(--text-muted);" data-translate="noLoans">এখনো কোনো ধার-দেনার হিসাব নেই</p>
+            <div class="section-header"><h3 data-translate="notepadTitle">নোট প্যাড (Quick Notes)</h3></div>
+            <div class="card">
+                <form id="noteForm" class="inline-form" style="margin-bottom: 12px;">
+                    <input type="text" id="noteInput" class="form-control" placeholder="জরুরি নোট লিখে রাখুন..." data-translate-placeholder="notePlaceholder" required>
+                    <button type="submit" class="btn btn-primary" data-translate="addBtn">যোগ</button>
+                </form>
+                <div id="notesList" class="item-list" style="max-height: 400px; overflow-y: auto;">
+                    <p id="emptyNoteMsg" style="text-align:center; color:var(--text-muted); font-size:0.85rem;" data-translate="noNotes">কোনো নোট নেই</p>
                 </div>
             </div>
         </section>
@@ -764,7 +761,7 @@
     <nav class="bottom-nav">
         <button class="nav-item active" data-view="dashboardView"><span class="nav-icon">🏠</span><span data-translate="navHome">হোম</span></button>
         <button class="nav-item" data-view="historyView"><span class="nav-icon">📜</span><span data-translate="navHistory">ইতিহাস</span></button>
-        <button class="nav-item" data-view="loanView"><span class="nav-icon">🤝</span><span data-translate="navLoan">ধার-পাওনা</span></button>
+        <button class="nav-item" data-view="loanView"><span class="nav-icon">📝</span><span data-translate="navNote">নোট</span></button>
         <button class="nav-item" data-view="reportView"><span class="nav-icon">📊</span><span data-translate="navReport">রিপোর্ট</span></button>
         <button class="nav-item" data-view="settingsView"><span class="nav-icon">⚙️</span><span data-translate="navSettings">সেটিংস</span></button>
     </nav>
@@ -912,6 +909,7 @@
                 bn: {
                     appName: "হাত-খরচ",
                     myWebsite: "আমার ওয়েবসাইট",
+                    myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "পরম করুণাময়, অতি দয়ালু আল্লাহর নামে",
                     quranHeader: "📖 কুরআনের মহান উপদেশ",
                     quranText: "“আর তোমরা অপব্যয় করো না। নিশ্চয়ই তিনি অপব্যয়কারীদের ভালোবাসেন না।”",
@@ -985,7 +983,7 @@
                     fabLoan: "🤝 ধার/পাওনা",
                     navHome: "হোম",
                     navHistory: "ইতিহাস",
-                    navLoan: "ধার-পাওনা",
+                    navNote: "নোট",
                     navReport: "রিপোর্ট",
                     navSettings: "সেটিংস",
                     newTxTitle: "নতুন লেনদেন",
@@ -1015,6 +1013,7 @@
                 ar: {
                     appName: "مصروفات شخصية",
                     myWebsite: "موقعي الإلكتروني",
+                    myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "بسم الله الرحمن الرحيم",
                     quranHeader: "📖 نصيحة قرآنية عظيمة",
                     quranText: "“وَلَا تُسْرِفُوا ۚ إِنَّهُ لَا يُحِبُّ الْمُسْرِفِينَ”",
@@ -1088,7 +1087,7 @@
                     fabLoan: "🤝 دين/مستحق",
                     navHome: "الرئيسية",
                     navHistory: "السجل",
-                    navLoan: "الديون",
+                    navNote: "ملاحظات",
                     navReport: "التقرير",
                     navSettings: "الإعدادات",
                     newTxTitle: "معاملة جديدة",
@@ -1118,6 +1117,7 @@
                 en: {
                     appName: "Hat-Khoroch",
                     myWebsite: "My Website",
+                    myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "In the name of Allah, the Most Gracious, the Most Merciful",
                     quranHeader: "📖 Great Quranic Advice",
                     quranText: "“And do not waste. Indeed, He does not like the wasteful.”",
@@ -1191,7 +1191,7 @@
                     fabLoan: "🤝 Loan/Debt",
                     navHome: "Home",
                     navHistory: "History",
-                    navLoan: "Loans",
+                    navNote: "Notes",
                     navReport: "Report",
                     navSettings: "Settings",
                     newTxTitle: "New Transaction",
@@ -1314,7 +1314,6 @@
                 receiptModalImg: document.getElementById('receiptModalImg')
             };
 
-            // Loan View DOM Elements
             const loanModal = document.getElementById('loan-modal');
             const openModalBtn = document.getElementById('open-loan-modal');
             const closeModalBtn = document.getElementById('close-modal');
@@ -1585,7 +1584,6 @@
                 });
             }
 
-            /* Loan Management Functions */
             function renderLoansUI() {
                 loanList.innerHTML = '';
                 if (state.loans.length === 0) {
@@ -1596,24 +1594,24 @@
                     state.loans.forEach(item => {
                         const isPabo = item.type === 'pabo';
                         const card = document.createElement('div');
-                        card.className = `p-4 rounded-lg border flex justify-between items-center ${isPabo ? 'bg-blue-50/50 border-blue-200' : 'bg-red-50/50 border-red-200'}`;
+                        card.className = `p-3 rounded-lg border flex justify-between items-center ${isPabo ? 'bg-blue-50/50 border-blue-200' : 'bg-red-50/50 border-red-200'}`;
                         
                         card.innerHTML = `
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <h4 class="font-bold text-gray-800">${escapeHtml(item.person)}</h4>
-                                    <span class="text-xs px-2 py-0.5 rounded-full ${isPabo ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'} font-semibold">
+                                    <h4 class="font-bold text-gray-800 text-sm">${escapeHtml(item.person)}</h4>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full ${isPabo ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'} font-semibold">
                                         ${isPabo ? 'পাবো' : 'দেবো'}
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-500">${item.date} ${item.phone ? '• ' + escapeHtml(item.phone) : ''}</p>
-                                ${item.note ? `<p class="text-xs text-gray-600 italic mt-1">${escapeHtml(item.note)}</p>` : ''}
-                                ${item.receipt ? `<button onclick="viewLoanReceipt('${item.id}')" class="text-xs text-blue-500 underline mt-1 block">রশিদ দেখুন</button>` : ''}
+                                <p class="text-[11px] text-gray-500">${item.date} ${item.phone ? '• ' + escapeHtml(item.phone) : ''}</p>
+                                ${item.note ? `<p class="text-[11px] text-gray-600 italic mt-0.5">${escapeHtml(item.note)}</p>` : ''}
+                                ${item.receipt ? `<button onclick="viewLoanReceipt('${item.id}')" class="text-[11px] text-blue-500 underline mt-0.5 block">রশিদ দেখুন</button>` : ''}
                             </div>
                             <div class="text-right flex items-center gap-2">
-                                <span class="font-bold text-lg ${isPabo ? 'text-blue-600' : 'text-red-600'}">${formatCurrency(item.amount)}</span>
-                                <button onclick="editLoan(${item.id})" class="text-blue-500 hover:text-blue-700 text-sm font-semibold px-1">সম্পাদনা</button>
-                                <button onclick="deleteLoan(${item.id})" class="text-red-500 hover:text-red-700 text-sm font-bold px-1">✕</button>
+                                <span class="font-bold text-base ${isPabo ? 'text-blue-600' : 'text-red-600'}">${formatCurrency(item.amount)}</span>
+                                <button onclick="editLoan(${item.id})" class="text-blue-500 hover:text-blue-700 text-xs font-semibold px-1">সম্পাদনা</button>
+                                <button onclick="deleteLoan(${item.id})" class="text-red-500 hover:text-red-700 text-xs font-bold px-1">✕</button>
                             </div>
                         `;
                         loanList.appendChild(card);
