@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>হাত-খরচ — Personal Money Manager</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* CSS Variables & Theme Setup */
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent-gold: #d97706;
+            --bg-main: #f0f9ff;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #bae6fd;
+            --income-color: #16a34a;
+            --expense-color: #dc2626;
+            --transfer-color: #2563eb;
+            --shadow: 0 4px 10px -2px rgba(2, 132, 199, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --radius: 14px;
+            body { font-family: 'Kalpurush', sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: 0.3s; }
+            --font-ar: 'Amiri', serif;
+            --font-en: 'Poppins', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --accent-gold: #f59e0b;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --income-color: #4ade80;
+            --expense-color: #f87171;
+            --transfer-color: #60a5fa;
+            --shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-bn);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        /* Bismillah Bar */
+        .bismillah-bar {
+            background-color: var(--bg-card);
+            text-align: center;
+            padding: 10px 12px 6px 12px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .bismillah-arabic {
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+            font-family: var(--font-ar);
+            font-weight: bold;
+            direction: rtl;
+            line-height: 1.2;
+        }
+
+        .bismillah-meaning {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: var(--bg-card);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 auto; /* লোগো মাঝে নেওয়ার জন্য */
+        }
+
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-title h1 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            line-height: 1.1;
+            font-weight: 700;
+        }
+
+        .header-title .subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+            font-family: var(--font-en);
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: absolute;
+            right: 16px;
+        }
+        
+        .header-left-actions {
+            position: absolute;
+            left: 16px;
+        }
+
+        .website-link {
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .website-link:hover {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            color: var(--text-main);
+        }
+
+        /* Layout */
+        .main-container {
+            padding: 16px;
+            max-width: 750px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .app-view { display: none; }
+        .app-view.active { display: block; }
+
+        /* Cards */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-card { padding: 12px 14px; }
+        .stat-card .card-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .stat-card h3 {
+            font-size: 1.15rem;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+
+        .income-bg h3 { color: var(--income-color); }
+        .expense-bg h3 { color: var(--expense-color); }
+
+        .section-header {
+            margin: 16px 0 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h3 {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            gap: 10px;
+        }
+
+        .source-item {
+            background-color: var(--bg-card);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .source-item strong {
+            display: block;
+            font-size: 0.88rem;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .source-item span {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Quran Card */
+        .quran-card {
+            border: 1px solid var(--accent-gold);
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.05) 0%, rgba(2, 134, 199, 0.05) 100%);
+            text-align: center;
+            padding: 18px 16px;
+        }
+
+        .quran-card-header {
+            font-size: 0.82rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .quran-arabic {
+            font-size: 1.35rem;
+            color: var(--text-main);
+            font-family: var(--font-ar);
+            direction: rtl;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .quran-bangla {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .quran-ref {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            margin-bottom: 4px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .inline-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary { background-color: var(--primary); color: #fff; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-danger { background-color: var(--expense-color); color: #fff; }
+
+        /* Receipt Button */
+        .btn-receipt-view {
+            background-color: #8e44ad;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            border: none;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        /* Tags */
+        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-item {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tag-item .delete-tag { cursor: pointer; color: var(--expense-color); font-weight: bold; }
+
+        /* Switch */
+        .setting-toggle { display: flex; justify-content: space-between; align-items: center; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border-color); transition: .3s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* List Items */
+        .item-list { display: flex; flex-direction: column; gap: 10px; }
+        .item-card {
+            background-color: var(--bg-card);
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .item-details strong { display: block; font-size: 0.9rem; color: var(--text-main); }
+        .item-details span { font-size: 0.75rem; color: var(--text-muted); }
+        .item-amount-group { text-align: right; }
+        .item-amount { font-size: 1rem; font-weight: bold; }
+        .item-amount.INCOME { color: var(--income-color); }
+        .item-amount.EXPENSE { color: var(--expense-color); }
+        .item-amount.TRANSFER { color: var(--transfer-color); }
+
+        .item-actions { margin-top: 4px; display: flex; gap: 8px; justify-content: flex-end; }
+        .action-btn { background: none; border: none; font-size: 0.78rem; cursor: pointer; color: var(--text-muted); font-weight: 500; }
+        .action-btn:hover { color: var(--primary); }
+
+        /* FAB & Nav */
+        .fab-container { position: fixed; bottom: 75px; right: 20px; z-index: 99; display: flex; flex-direction: column; align-items: flex-end; }
+        .fab-main {
+            width: 52px; height: 52px; border-radius: 50%; background-color: var(--primary);
+            color: white; border: none; font-size: 1.6rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer;
+        }
+        .fab-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .fab-option { padding: 8px 16px; border-radius: 20px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .income-btn { background-color: var(--income-color); }
+        .expense-btn { background-color: var(--expense-color); }
+        .transfer-btn { background-color: var(--transfer-color); }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
+            background-color: var(--bg-card); display: flex; justify-content: space-around;
+            align-items: center; border-top: 1px solid var(--border-color); z-index: 100;
+        }
+
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); cursor: pointer; font-size: 0.72rem; width: 20%; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-icon { font-size: 1.15rem; margin-bottom: 2px; }
+
+        /* Modals Structure */
+        .modal-backdrop {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background-color: rgba(0,0,0,0.5); display: flex;
+            justify-content: center; align-items: center; z-index: 250; padding: 16px;
+        }
+        .modal-content {
+            background-color: var(--bg-card); width: 100%; max-width: 450px;
+            border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+        /* Profile Banner */
+        .profile-banner { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .profile-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); background-color: #e2e8f0; }
+
+        /* Bank Statement Table */
+        .bank-statement-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; font-family: var(--font-en), var(--font-bn); margin-top: 10px; }
+        .bank-statement-table th, .bank-statement-table td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: left; }
+        .bank-statement-table th { background-color: #f1f5f9; font-weight: 600; color: #334155; }
+        .bank-statement-table .num-col { text-align: right; white-space: nowrap; }
+
+        /* App Footer */
+        .app-footer { 
+            background-color: #000000;
+            color: #ffffff;
+            text-align: center; 
+            padding: 16px 0; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            font-family: var(--font-en); 
+            letter-spacing: 1px;
+            margin-top: auto;
+        }
+
+        @media print {
+            body { background: white; color: black; padding-bottom: 0; }
+            .app-header, .bottom-nav, .fab-container, .btn, .icon-btn, .filter-card, .section-header, .bismillah-bar { display: none !important; }
+            .main-container { max-width: 100%; padding: 0; }
+            .app-view { display: none !important; }
+            #reportView { display: block !important; }
+            .card { box-shadow: none; border: none; padding: 0; margin-bottom: 0; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 15px; }
+            .bank-statement-table th, .bank-statement-table td { border: 1px solid #000 !important; color: #000 !important; }
+            .statement-footer-text { display: block !important; text-align: center; margin-top: 30px; font-weight: bold; }
+        }
+
+        .print-header, .statement-footer-text { display: none; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Islamic Bismillah Bar -->
+    <div class="bismillah-bar">
+        <div class="bismillah-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <div class="bismillah-meaning" data-translate="bismillahMeaning">পরম করুণাময়, অতি দয়ালু আল্লাহর নামে</div>
+    </div>
+
+    <!-- Header Bar -->
+    <header class="app-header">
+        <div class="header-left-actions">
+            <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle Theme">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
+        <div class="header-brand">
+            <div class="logo-container" id="logoContainer">
+                <img src="https://i.ibb.co.com/HDkwQdny/logo.png" alt="লোগো" id="appLogoImg">
+            </div>
+            <div class="header-title">
+                <h1 id="headerAppName" data-translate="appName">হাত-খরচ</h1>
+                <span class="subtitle">Personal Money Manager</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="https://salmanfarshi1630.github.io/" target="_blank" class="website-link" data-translate="myWebsite">আমার ওয়েবসাইট</a>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+        
+        <!-- DASHBOARD VIEW -->
+        <section id="dashboardView" class="app-view active">
+            <div class="card quran-card">
+                <div class="quran-card-header" data-translate="quranHeader">📖 কুরআনের মহান উপদেশ</div>
+                <div class="quran-arabic">وَلَا تُسْرِفُوا ۚ إِنَّهُ لَا يُحِبُّ الْمُسْرِفِينَ</div>
+                <div class="quran-bangla" data-translate="quranText">“আর তোমরা অপব্যয় করো না। নিশ্চয়ই তিনি অপব্যয়কারীদের ভালোবাসেন না।”</div>
+                <div class="quran-ref" data-translate="quranRef">— সূরা আল-আ'রাফ (৭:৩১)</div>
+            </div>
+
+            <div class="section-header"><h3 data-translate="moneySources">টাকার উৎসসমূহ (Sources)</h3></div>
+            <div id="sourcesList" class="sources-grid"></div>
+
+            <div class="section-header"><h3 data-translate="incomeExpenseSummary">আয়-ব্যয় সংক্ষিপ্ত</h3></div>
+            <div class="grid-2">
+                <div class="card stat-card income-bg"><span class="card-label" data-translate="todayIncome">আজকের আয়</span><h3 id="todayIncomeText">৳০</h3></div>
+                <div class="card stat-card expense-bg"><span class="card-label" data-translate="todayExpense">আজকের খরচ</span><h3 id="todayExpenseText">৳০</h3></div>
+                <div class="card stat-card income-bg"><span class="card-label" data-translate="monthIncome">এই মাসের আয়</span><h3 id="monthIncomeText">৳০</h3></div>
+                <div class="card stat-card expense-bg"><span class="card-label" data-translate="monthExpense">এই মাসের খরচ</span><h3 id="monthExpenseText">৳০</h3></div>
+            </div>
+
+            <!-- Note Pad on Home Screen -->
+            <div class="section-header"><h3 data-translate="notepadTitle">নোট প্যাড (Quick Notes)</h3></div>
+            <div class="card">
+                <form id="noteForm" class="inline-form" style="margin-bottom: 12px;">
+                    <input type="text" id="noteInput" class="form-control" placeholder="জরুরি নোট লিখে রাখুন..." data-translate-placeholder="notePlaceholder" required>
+                    <button type="submit" class="btn btn-primary" data-translate="addBtn">যোগ</button>
+                </form>
+                <div id="notesList" class="item-list" style="max-height: 200px; overflow-y: auto;">
+                    <p id="emptyNoteMsg" style="text-align:center; color:var(--text-muted); font-size:0.85rem;" data-translate="noNotes">কোনো নোট নেই</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORY VIEW -->
+        <section id="historyView" class="app-view">
+            <div class="section-header"><h3 data-translate="txHistory">লেনদেনের ইতিহাস</h3></div>
+            <div class="card filter-card">
+                <div class="form-group">
+                    <input type="text" id="searchInput" placeholder="খুঁজুন (নোট, ক্যাটাগরি বা উৎস)..." data-translate-placeholder="searchPlaceholder" class="form-control">
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="typeFilter" data-translate="typeLabel">টাইপ</label>
+                        <select id="typeFilter" class="form-control">
+                            <option value="ALL" data-translate="allTypes">সব টাইপ</option>
+                            <option value="INCOME" data-translate="incomeOpt">আয়</option>
+                            <option value="EXPENSE" data-translate="expenseOpt">খরচ</option>
+                            <option value="TRANSFER" data-translate="transferOpt">ট্রান্সফার</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateFilter" data-translate="timeRangeLabel">সময়সীমা</label>
+                        <select id="dateFilter" class="form-control">
+                            <option value="ALL" data-translate="allTime">সব সময়</option>
+                            <option value="TODAY" data-translate="todayOpt">আজ</option>
+                            <option value="WEEK" data-translate="weekOpt">এই সপ্তাহ</option>
+                            <option value="MONTH" data-translate="monthOpt">এই মাস</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="sourceFilter" data-translate="sourceLabelNav">উৎস</label>
+                        <select id="sourceFilter" class="form-control"><option value="ALL" data-translate="allSources">সব উৎস</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryFilter" data-translate="categoryLabelNav">ক্যাটাগরি</label>
+                        <select id="categoryFilter" class="form-control"><option value="ALL" data-translate="allCategories">সব ক্যাটাগরি</option></select>
+                    </div>
+                </div>
+            </div>
+            <div id="transactionList" class="item-list"></div>
+        </section>
+
+        <!-- LOAN / DEBT VIEW -->
+        <section id="loanView" class="app-view">
+            <div class="max-w-xl mx-auto bg-white rounded-xl shadow-md p-4 sm:p-6 text-gray-800" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
+                <!-- Summary Section -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 rounded-lg text-center border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <p class="text-sm font-semibold" style="color: var(--text-muted);" data-translate="receivableTitle">আমি পাবো (পাওনা)</p>
+                        <p id="total-receivable" class="text-xl font-bold" style="color: var(--income-color);">৳০.০০</p>
+                    </div>
+                    <div class="p-4 rounded-lg text-center border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <p class="text-sm font-semibold" style="color: var(--text-muted);" data-translate="payableTitle">আমি দেবো (দেনা)</p>
+                        <p id="total-payable" class="text-xl font-bold" style="color: var(--expense-color);">৳০.০০</p>
+                    </div>
+                </div>
+
+                <!-- Header Action -->
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold" style="color: var(--text-main);" data-translate="loanHeaderTitle">ধার ও দেনার হিসাব-নিকাশ</h2>
+                    <button id="open-loan-modal" class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all" data-translate="newLoanBtn">
+                        + নতুন ধার/পাওনা
+                    </button>
+                </div>
+
+                <!-- Loan Item List -->
+                <div id="loan-list" class="space-y-3">
+                    <p id="empty-msg" class="text-center py-4" style="color: var(--text-muted);" data-translate="noLoans">এখনো কোনো ধার-দেনার হিসাব নেই</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPORT VIEW -->
+        <section id="reportView" class="app-view">
+            <div class="print-header">
+                <h2>হাত-খরচ — Account Statement</h2>
+                <p id="printProfileName">Customer: -</p>
+                <p id="printDateRange">Period: -</p>
+                <hr style="margin: 10px 0;">
+            </div>
+
+            <div class="section-header">
+                <h3 data-translate="statementReportTitle">স্টেটমেন্ট ও রিপোর্ট</h3>
+                <button id="printReportBtn" class="btn btn-primary" data-translate="printBtn">🖨️ প্রিন্ট / PDF সেভ</button>
+            </div>
+
+            <div class="card filter-card">
+                <div class="form-group">
+                    <label for="reportRangeSelect" data-translate="selectTimeRange">সময়সীমা নির্বাচন করুন</label>
+                    <select id="reportRangeSelect" class="form-control">
+                        <option value="TODAY" data-translate="todayOpt">আজ</option>
+                        <option value="WEEK" data-translate="weekOpt">এই সপ্তাহ</option>
+                        <option value="THIS_MONTH" selected data-translate="thisMonthOpt">এই মাস</option>
+                        <option value="LAST_MONTH" data-translate="lastMonthOpt">গত মাস</option>
+                        <option value="THIS_YEAR" data-translate="thisYearOpt">এই বছর</option>
+                        <option value="CUSTOM" data-translate="customDateOpt">কাস্টম তারিখ</option>
+                    </select>
+                </div>
+                <div class="grid-2 hidden" id="customDateGroup">
+                    <div class="form-group"><label for="reportStartDate" data-translate="startDate">শুরু তারিখ</label><input type="date" id="reportStartDate" class="form-control"></div>
+                    <div class="form-group"><label for="reportEndDate" data-translate="endDate">শেষ তারিখ</label><input type="date" id="reportEndDate" class="form-control"></div>
+                </div>
+            </div>
+
+            <div id="reportSummaryContent" class="card">
+                <h4 style="font-size:1rem; margin-bottom:12px; color:var(--primary);" data-translate="reportSummaryTitle">রিপোর্ট সংক্ষিপ্তি</h4>
+                <p style="margin-bottom:6px;"><strong data-translate="totalIncomeRep">মোট আয়:</strong> <span id="repIncome">৳০</span></p>
+                <p style="margin-bottom:6px;"><strong data-translate="totalExpenseRep">মোট খরচ:</strong> <span id="repExpense">৳০</span></p>
+                <p style="margin-bottom:6px;"><strong data-translate="netSavingsRep">নিট সঞ্চয়/ব্যালেন্স:</strong> <span id="repNet">৳০</span></p>
+                <p style="margin-bottom:6px;"><strong data-translate="receivableRep">বাকি পাওনা (পাব):</strong> <span id="repReceivable">৳০</span></p>
+                <p style="margin-bottom:6px;"><strong data-translate="payableRep">বাকি দেনা (দেব):</strong> <span id="repPayable">৳০</span></p>
+            </div>
+
+            <div class="section-header"><h3 data-translate="bankStatementTitle">ব্যাংক স্টেটমেন্ট (বিস্তারিত লেনদেন)</h3></div>
+            <div id="reportTableContainer" class="card" style="padding: 10px; overflow-x: auto;"></div>
+            
+            <div class="statement-footer-text"></div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section id="settingsView" class="app-view">
+            <div class="section-header"><h3 data-translate="settingsProfileTitle">সেটিংস ও প্রোফাইল</h3></div>
+            
+            <!-- Language Settings Card -->
+            <div class="card">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="languageSelect" style="font-weight: bold; font-size: 0.9rem; color: var(--text-main);" data-translate="languageLabel">ভাষা পরিবর্তন করুন (Language)</label>
+                    <select id="languageSelect" class="form-control" style="margin-top: 6px;">
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="ar">العربية (Arabic)</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="profile-banner">
+                    <img id="profileDisplayImg" src="https://i.ibb.co.com/HDkwQdny/logo.png" class="profile-avatar" alt="প্রোফাইল ছবি">
+                    <div class="profile-info">
+                        <h4 id="profileDisplayName">ব্যবহারকারী</h4>
+                        <p id="profileDisplayPhone">মোবাইল: -</p>
+                    </div>
+                </div>
+                <hr style="margin: 10px 0; border-color: var(--border-color);">
+                <form id="profileForm">
+                    <div class="form-group"><label for="profName" data-translate="yourName">আপনার নাম</label><input type="text" id="profName" class="form-control" placeholder="আপনার নাম লিখুন" data-translate-placeholder="namePlaceholder"></div>
+                    <div class="form-group"><label for="profPhone" data-translate="mobileNo">মোবাইল নম্বর</label><input type="text" id="profPhone" class="form-control" placeholder="01XXXXXXXXX"></div>
+                    <div class="form-group"><label for="profImg" data-translate="profilePic">প্রোফাইল ছবি (ঐচ্ছিক)</label><input type="file" id="profImg" accept="image/*" class="form-control"></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" data-translate="saveProfileBtn">প্রোফাইল সেভ করুন</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="setting-toggle">
+                    <div>
+                        <strong data-translate="negativeBalTitle">নেগেটিভ ব্যালেন্স অনুমতি</strong>
+                        <p style="font-size:0.75rem; color:var(--text-muted);" data-translate="negativeBalDesc">ব্যালেন্স ০-এর কম হলেও খরচ/ট্রান্সফার করার অনুমতি দিন</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="allowNegativeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4 style="font-size:0.95rem; margin-bottom:8px;" data-translate="sourceMgmtTitle">উৎস (Sources) ব্যবস্থাপনা</h4>
+                <form id="addSourceForm" class="inline-form">
+                    <input type="text" id="newSourceName" placeholder="নতুন উৎসের নাম..." data-translate-placeholder="newSourcePlaceholder" class="form-control" required>
+                    <button type="submit" class="btn btn-primary" data-translate="addBtn">যোগ</button>
+                </form>
+                <div id="manageSourcesList" class="tag-list"></div>
+            </div>
+
+            <div class="card">
+                <h4 style="font-size:0.95rem; margin-bottom:8px;" data-translate="categoryMgmtTitle">ক্যাটাগরি ব্যবস্থাপনা</h4>
+                <form id="addCategoryForm" class="inline-form">
+                    <input type="text" id="newCategoryName" placeholder="নতুন ক্যাটাগরির নাম..." data-translate-placeholder="newCategoryPlaceholder" class="form-control" required>
+                    <button type="submit" class="btn btn-primary" data-translate="addBtn">যোগ</button>
+                </form>
+                <div id="manageCategoriesList" class="tag-list"></div>
+            </div>
+
+            <div class="card" style="border-color: var(--expense-color);">
+                <h4 style="font-size:0.95rem; margin-bottom:4px; color: var(--expense-color);" data-translate="dataResetTitle">ডাটা রিসেট</h4>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;" data-translate="dataResetDesc">সমস্ত লেনদেন, ধার-পাওনা, প্রোফাইল ডাটা মুছে ফেলুন।</p>
+                <button id="clearDataBtn" class="btn btn-danger" data-translate="clearDataBtn">সব ডাটা মুছে ফেলুন</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        &copy; 2026 SALMAN FARSHI | All Rights Reserved
+    </footer>
+
+    <!-- FAB -->
+    <div class="fab-container">
+        <div id="fabOptions" class="fab-options hidden">
+            <button class="fab-option income-btn" data-action="INCOME" data-translate="fabIncome">➕ আয়</button>
+            <button class="fab-option expense-btn" data-action="EXPENSE" data-translate="fabExpense">➖ খরচ</button>
+            <button class="fab-option transfer-btn" data-action="TRANSFER" data-translate="fabTransfer">🔄 ট্রান্সফার</button>
+            <button class="fab-option" style="background-color: var(--accent-gold);" data-action="LOAN" data-translate="fabLoan">🤝 ধার/পাওনা</button>
+        </div>
+        <button id="mainFab" class="fab-main">+</button>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-view="dashboardView"><span class="nav-icon">🏠</span><span data-translate="navHome">হোম</span></button>
+        <button class="nav-item" data-view="historyView"><span class="nav-icon">📜</span><span data-translate="navHistory">ইতিহাস</span></button>
+        <button class="nav-item" data-view="loanView"><span class="nav-icon">🤝</span><span data-translate="navLoan">ধার-পাওনা</span></button>
+        <button class="nav-item" data-view="reportView"><span class="nav-icon">📊</span><span data-translate="navReport">রিপোর্ট</span></button>
+        <button class="nav-item" data-view="settingsView"><span class="nav-icon">⚙️</span><span data-translate="navSettings">সেটিংস</span></button>
+    </nav>
+
+    <!-- MODAL FOR ADD / EDIT TRANSACTION -->
+    <div id="transactionModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" style="font-size:1.1rem;" data-translate="newTxTitle">নতুন লেনদেন</h3>
+                <button class="close-btn closeModalBtn">&times;</button>
+            </div>
+            <form id="transactionForm">
+                <input type="hidden" id="txId">
+                <input type="hidden" id="txType">
+
+                <div class="form-group">
+                    <label for="txAmount" data-translate="amountLabel">পরিমাণ (৳) *</label>
+                    <input type="number" step="any" min="0.01" id="txAmount" class="form-control" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group" id="sourceGroup">
+                    <label for="txSource" id="sourceLabel" data-translate="sourceLabelModal">উৎস *</label>
+                    <select id="txSource" class="form-control" required></select>
+                </div>
+
+                <div class="form-group hidden" id="toSourceGroup">
+                    <label for="txToSource" data-translate="toSourceLabel">কোন উৎসে পাঠাবেন *</label>
+                    <select id="txToSource" class="form-control"></select>
+                </div>
+
+                <div class="form-group" id="categoryGroup">
+                    <label for="txCategory" data-translate="categoryLabelModal">ক্যাটাগরি *</label>
+                    <select id="txCategory" class="form-control"></select>
+                </div>
+
+                <div class="form-group hidden" id="otherCategoryGroup">
+                    <label for="txOtherCategory" data-translate="otherCatLabel">অন্যান্য খরচের বিবরণ লিখুন</label>
+                    <input type="text" id="txOtherCategory" class="form-control" placeholder="যেমন: চা-নাস্তা, গাড়ি ভাড়া ইত্যাদি">
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="txDate" data-translate="dateLabel">তারিখ *</label>
+                        <input type="date" id="txDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="txTime" data-translate="timeLabel">সময় *</label>
+                        <input type="time" id="txTime" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="txNote" data-translate="noteLabel">নোট (ঐচ্ছিক)</label>
+                    <input type="text" id="txNote" class="form-control" placeholder="সংক্ষিপ্ত বিবরণ..." data-translate-placeholder="noteDescPlaceholder">
+                </div>
+
+                <div class="form-group">
+                    <label for="txReceipt" data-translate="receiptLabel">🧾 রশিদ / মেমো ছবি যুক্ত করুন (ঐচ্ছিক)</label>
+                    <input type="file" id="txReceipt" accept="image/*" class="form-control">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline closeModalBtn" data-translate="cancelBtn">বাতিল</button>
+                    <button type="submit" class="btn btn-primary" data-translate="saveBtn">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FOR ADD / EDIT LOAN -->
+    <div id="loan-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-[250]">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto text-gray-800 my-auto" style="background-color: var(--bg-card); color: var(--text-main);">
+            <h3 id="modal-title" class="text-lg font-bold mb-4" data-translate="newLoanModalTitle">নতুন ধার/পাওনা যোগ করুন</h3>
+            
+            <form id="loan-form" class="space-y-4">
+                <input type="hidden" id="loan-id">
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="loanTypeLabel">লেনদেনের ধরন *</label>
+                    <select id="loan-type" class="w-full border rounded-lg p-2 outline-none" style="background-color: var(--bg-main); color: var(--text-main); border-color: var(--border-color);" required>
+                        <option value="pabo" data-translate="paboOpt">আমি পাবো (পাওনা)</option>
+                        <option value="debo" data-translate="deboOpt">আমি দেবো (দেনা)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="personNameLabel">ব্যক্তির নাম *</label>
+                    <input type="text" id="loan-person" class="w-full border rounded-lg p-2 outline-none" style="background-color: var(--bg-main); color: var(--text-main); border-color: var(--border-color);" placeholder="উদা: রহিম" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="amountLabel">পরিমাণ (৳) *</label>
+                    <input type="number" id="loan-amount" class="w-full border rounded-lg p-2 outline-none" style="background-color: var(--bg-main); color: var(--text-main); border-color: var(--border-color);" placeholder="0.00" min="1" step="any" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="mobileNoOptional">মোবাইল নম্বর (ঐচ্ছিক)</label>
+                    <input type="tel" id="loan-phone" class="w-full border rounded-lg p-2 outline-none" style="background-color: var(--bg-main); color: var(--text-main); border-color: var(--border-color);" placeholder="017xxxxxxxx">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="dateLabel">তারিখ *</label>
+                    <input type="date" id="loan-date" class="w-full border rounded-lg p-2 outline-none" style="background-color: var(--bg-main); color: var(--text-main); border-color: var(--border-color);" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="receiptImgLabel">রশিদের ছবি (ঐচ্ছিক)</label>
+                    <input type="file" id="loan-receipt" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <input type="hidden" id="existing-receipt">
+                    <div id="receipt-preview-container" class="mt-2 hidden">
+                        <img id="receipt-preview" src="" alt="রশিদ" class="w-20 h-20 object-cover rounded border">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1" style="color: var(--text-muted);" data-translate="noteDescLabel">নোট / বিবরণ (ঐচ্ছিক)</label>
+                    <textarea id="loan-note" rows="2" class="w-full border rounded-lg p-2 outline-none" style="background-color: var(--bg-main); color: var(--text-main); border-color: var(--border-color);" placeholder="সংক্ষিপ্ত বিবরণ..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" id="close-modal" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400" data-translate="cancelBtn">বাতিল</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" data-translate="saveBtn">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RECEIPT MODAL -->
+    <div id="receiptModal" class="modal-backdrop hidden">
+        <div class="modal-content text-center">
+            <h4 style="margin-bottom: 10px; font-weight:bold;" data-translate="receiptModalTitle">🧾 রশিদ / মেমোর ছবি</h4>
+            <img id="receiptModalImg" src="" alt="মেমো পাওয়া যায়নি" style="max-width: 100%; max-height: 350px; border-radius: 8px; border: 1px solid var(--border-color);" class="mx-auto">
+            <div style="margin-top: 15px;">
+                <button class="btn btn-danger closeReceiptModalBtn" data-translate="closeBtn">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        (function () {
+            'use strict';
+
+            const TRANSLATIONS = {
+                bn: {
+                    appName: "হাত-খরচ",
+                    myWebsite: "আমার ওয়েবসাইট",
+                    bismillahMeaning: "পরম করুণাময়, অতি দয়ালু আল্লাহর নামে",
+                    quranHeader: "📖 কুরআনের মহান উপদেশ",
+                    quranText: "“আর তোমরা অপব্যয় করো না। নিশ্চয়ই তিনি অপব্যয়কারীদের ভালোবাসেন না।”",
+                    quranRef: "— সূরা আল-আ'রাফ (৭:৩১)",
+                    moneySources: "টাকার উৎসসমূহ (Sources)",
+                    incomeExpenseSummary: "আয়-ব্যয় সংক্ষিপ্ত",
+                    todayIncome: "আজকের আয়",
+                    todayExpense: "আজকের খরচ",
+                    monthIncome: "এই মাসের আয়",
+                    monthExpense: "এই মাসের খরচ",
+                    notepadTitle: "নোট প্যাড (Quick Notes)",
+                    notePlaceholder: "জরুরি নোট লিখে রাখুন...",
+                    addBtn: "যোগ",
+                    noNotes: "কোনো নোট নেই",
+                    txHistory: "লেনদেনের ইতিহাস",
+                    searchPlaceholder: "খুঁজুন (নোট, ক্যাটাগরি বা উৎস)...",
+                    typeLabel: "টাইপ",
+                    allTypes: "সব টাইপ",
+                    incomeOpt: "আয়",
+                    expenseOpt: "খরচ",
+                    transferOpt: "ট্রান্সফার",
+                    timeRangeLabel: "সময়সীমা",
+                    allTime: "সব সময়",
+                    todayOpt: "আজ",
+                    weekOpt: "এই সপ্তাহ",
+                    monthOpt: "এই মাস",
+                    sourceLabelNav: "উৎস",
+                    allSources: "সব উৎস",
+                    categoryLabelNav: "ক্যাটাগরি",
+                    allCategories: "সব ক্যাটাগরি",
+                    receivableTitle: "আমি পাবো (পাওনা)",
+                    payableTitle: "আমি দেবো (দেনা)",
+                    loanHeaderTitle: "ধার ও দেনার হিসাব-নিকাশ",
+                    newLoanBtn: "+ নতুন ধার/পাওনা",
+                    noLoans: "এখনো কোনো ধার-দেনার হিসাব নেই",
+                    statementReportTitle: "স্টেটমেন্ট ও রিপোর্ট",
+                    printBtn: "🖨️ প্রিন্ট / PDF সেভ",
+                    selectTimeRange: "সময়সীমা নির্বাচন করুন",
+                    thisMonthOpt: "এই মাস",
+                    lastMonthOpt: "গত মাস",
+                    thisYearOpt: "এই বছর",
+                    customDateOpt: "কাস্টম তারিখ",
+                    startDate: "শুরু তারিখ",
+                    endDate: "শেষ তারিখ",
+                    reportSummaryTitle: "রিপোর্ট সংক্ষিপ্তি",
+                    totalIncomeRep: "মোট আয়:",
+                    totalExpenseRep: "মোট খরচ:",
+                    netSavingsRep: "নিট সঞ্চয়/ব্যালেন্স:",
+                    receivableRep: "বাকি পাওনা (পাব):",
+                    payableRep: "বাকি দেনা (দেব):",
+                    bankStatementTitle: "ব্যাংক স্টেটমেন্ট (বিস্তারিত লেনদেন)",
+                    settingsProfileTitle: "সেটিংস ও প্রোফাইল",
+                    languageLabel: "ভাষা পরিবর্তন করুন (Language)",
+                    yourName: "আপনার নাম",
+                    namePlaceholder: "আপনার নাম লিখুন",
+                    mobileNo: "মোবাইল নম্বর",
+                    profilePic: "প্রোফাইল ছবি (ঐচ্ছিক)",
+                    saveProfileBtn: "প্রোফাইল সেভ করুন",
+                    negativeBalTitle: "নেগেটিভ ব্যালেন্স অনুমতি",
+                    negativeBalDesc: "ব্যালেন্স ০-এর কম হলেও খরচ/ট্রান্সফার করার অনুমতি দিন",
+                    sourceMgmtTitle: "উৎস (Sources) ব্যবস্থাপনা",
+                    newSourcePlaceholder: "নতুন উৎসের নাম...",
+                    categoryMgmtTitle: "ক্যাটাগরি ব্যবস্থাপনা",
+                    newCategoryPlaceholder: "নতুন ক্যাটাগরির নাম...",
+                    dataResetTitle: "ডাটা রিসেট",
+                    dataResetDesc: "সমস্ত লেনদেন, ধার-পাওনা, প্রোফাইল ডাটা মুছে ফেলুন।",
+                    clearDataBtn: "সব ডাটা মুছে ফেলুন",
+                    fabIncome: "➕ আয়",
+                    fabExpense: "➖ খরচ",
+                    fabTransfer: "🔄 ট্রান্সফার",
+                    fabLoan: "🤝 ধার/পাওনা",
+                    navHome: "হোম",
+                    navHistory: "ইতিহাস",
+                    navLoan: "ধার-পাওনা",
+                    navReport: "রিপোর্ট",
+                    navSettings: "সেটিংস",
+                    newTxTitle: "নতুন লেনদেন",
+                    amountLabel: "পরিমাণ (৳) *",
+                    sourceLabelModal: "উৎস *",
+                    toSourceLabel: "কোন উৎসে পাঠাবেন *",
+                    categoryLabelModal: "ক্যাটাগরি *",
+                    otherCatLabel: "অন্যান্য খরচের বিবরণ লিখুন",
+                    dateLabel: "তারিখ *",
+                    timeLabel: "সময় *",
+                    noteLabel: "নোট (ঐচ্ছিক)",
+                    noteDescPlaceholder: "সংক্ষিপ্ত বিবরণ...",
+                    receiptLabel: "🧾 রশিদ / মেমো ছবি যুক্ত করুন (ঐচ্ছিক)",
+                    cancelBtn: "বাতিল",
+                    saveBtn: "সংরক্ষণ করুন",
+                    newLoanModalTitle: "নতুন ধার/পাওনা যোগ করুন",
+                    loanTypeLabel: "লেনদেনের ধরন *",
+                    paboOpt: "আমি পাবো (পাওনা)",
+                    deboOpt: "আমি দেবো (দেনা)",
+                    personNameLabel: "ব্যক্তির নাম *",
+                    mobileNoOptional: "মোবাইল নম্বর (ঐচ্ছিক)",
+                    receiptImgLabel: "রশিদের ছবি (ঐচ্ছিক)",
+                    noteDescLabel: "নোট / বিবরণ (ঐচ্ছিক)",
+                    receiptModalTitle: "🧾 রশিদ / মেমোর ছবি",
+                    closeBtn: "বন্ধ করুন"
+                },
+                ar: {
+                    appName: "مصروفات شخصية",
+                    myWebsite: "موقعي الإلكتروني",
+                    bismillahMeaning: "بسم الله الرحمن الرحيم",
+                    quranHeader: "📖 نصيحة قرآنية عظيمة",
+                    quranText: "“وَلَا تُسْرِفُوا ۚ إِنَّهُ لَا يُحِبُّ الْمُسْرِفِينَ”",
+                    quranRef: "— سورة الأعراف (٧:٣١)",
+                    moneySources: "مصادر الأموال",
+                    incomeExpenseSummary: "ملخص الدخل والمصروفات",
+                    todayIncome: "دخل اليوم",
+                    todayExpense: "مصروف اليوم",
+                    monthIncome: "دخل هذا الشهر",
+                    monthExpense: "مصروف هذا الشهر",
+                    notepadTitle: "مفكرة سريعة (Quick Notes)",
+                    notePlaceholder: "اكتب ملاحظة عاجلة...",
+                    addBtn: "إضافة",
+                    noNotes: "لا توجد ملاحظات",
+                    txHistory: "سجل المعاملات",
+                    searchPlaceholder: "بحث (ملاحظة، فئة، أو مصدر)...",
+                    typeLabel: "النوع",
+                    allTypes: "كل الأنواع",
+                    incomeOpt: "دخل",
+                    expenseOpt: "مصروف",
+                    transferOpt: "تحويل",
+                    timeRangeLabel: "النطاق الزمني",
+                    allTime: "كل الأوقات",
+                    todayOpt: "اليوم",
+                    weekOpt: "هذا الأسبوع",
+                    monthOpt: "هذا الشهر",
+                    sourceLabelNav: "المصدر",
+                    allSources: "كل المصادر",
+                    categoryLabelNav: "الفئة",
+                    allCategories: "كل الفئات",
+                    receivableTitle: "له عندي / لي (مستحقات)",
+                    payableTitle: "علي (ديون)",
+                    loanHeaderTitle: "حساب الديون والمستحقات",
+                    newLoanBtn: "+ دين / مستحق جديد",
+                    noLoans: "لا توجد حسابات ديون حتى الآن",
+                    statementReportTitle: "البيان والتقرير",
+                    printBtn: "🖨️ طباعة / حفظ PDF",
+                    selectTimeRange: "اختر النطاق الزمني",
+                    thisMonthOpt: "هذا الشهر",
+                    lastMonthOpt: "الشهر الماضي",
+                    thisYearOpt: "هذا العام",
+                    customDateOpt: "تاريخ مخصص",
+                    startDate: "تاريخ البداية",
+                    endDate: "تاريخ النهاية",
+                    reportSummaryTitle: "ملخص التقرير",
+                    totalIncomeRep: "إجمالي الدخل:",
+                    totalExpenseRep: "إجمالي المصروفات:",
+                    netSavingsRep: "صافي التوفير / الرصيد:",
+                    receivableRep: "المستحقات (لي):",
+                    payableRep: "الديون (عليّ):",
+                    bankStatementTitle: "كشف الحساب البنكي (المعاملات التفصيلية)",
+                    settingsProfileTitle: "الإعدادات والملف الشخصي",
+                    languageLabel: "تغيير اللغة (Language)",
+                    yourName: "اسمك",
+                    namePlaceholder: "أدخل اسمك",
+                    mobileNo: "رقم الجوال",
+                    profilePic: "صورة الملف الشخصي (اختياري)",
+                    saveProfileBtn: "حفظ الملف الشخصي",
+                    negativeBalTitle: "السماح بالرصيد السلبي",
+                    negativeBalDesc: "السماح بالمصروفات أو التحويل حتى لو كان الرصيد أقل من الصفر",
+                    sourceMgmtTitle: "إدارة المصادر",
+                    newSourcePlaceholder: "اسم مصدر جديد...",
+                    categoryMgmtTitle: "إدارة الفئات",
+                    newCategoryPlaceholder: "اسم فئة جديدة...",
+                    dataResetTitle: "إعادة ضبط البيانات",
+                    dataResetDesc: "حذف جميع المعاملات، الديون، وبيانات الملف الشخصي.",
+                    clearDataBtn: "حذف جميع البيانات",
+                    fabIncome: "➕ دخل",
+                    fabExpense: "➖ مصروف",
+                    fabTransfer: "🔄 تحويل",
+                    fabLoan: "🤝 دين/مستحق",
+                    navHome: "الرئيسية",
+                    navHistory: "السجل",
+                    navLoan: "الديون",
+                    navReport: "التقرير",
+                    navSettings: "الإعدادات",
+                    newTxTitle: "معاملة جديدة",
+                    amountLabel: "المبلغ (৳) *",
+                    sourceLabelModal: "المصدر *",
+                    toSourceLabel: "إلى أي مصدر تحويل *",
+                    categoryLabelModal: "الفئة *",
+                    otherCatLabel: "أدخل تفاصيل مصروف آخر",
+                    dateLabel: "التاريخ *",
+                    timeLabel: "الوقت *",
+                    noteLabel: "ملاحظة (اختياري)",
+                    noteDescPlaceholder: "تفاصيل مختصرة...",
+                    receiptLabel: "🧾 إرفاق إيصال / صورة (اختياري)",
+                    cancelBtn: "إلغاء",
+                    saveBtn: "حفظ",
+                    newLoanModalTitle: "إضافة دين / مستحق جديد",
+                    loanTypeLabel: "نوع المعاملة *",
+                    paboOpt: "لي (مستحق)",
+                    deboOpt: "عليّ (دين)",
+                    personNameLabel: "اسم الشخص *",
+                    mobileNoOptional: "رقم الجوال (اختياري)",
+                    receiptImgLabel: "صورة الإيصال (اختياري)",
+                    noteDescLabel: "ملاحظة / تفاصيل (اختياري)",
+                    receiptModalTitle: "🧾 صورة الإيصال",
+                    closeBtn: "إغلاق"
+                },
+                en: {
+                    appName: "Hat-Khoroch",
+                    myWebsite: "My Website",
+                    bismillahMeaning: "In the name of Allah, the Most Gracious, the Most Merciful",
+                    quranHeader: "📖 Great Quranic Advice",
+                    quranText: "“And do not waste. Indeed, He does not like the wasteful.”",
+                    quranRef: "— Surah Al-A'raf (7:31)",
+                    moneySources: "Money Sources",
+                    incomeExpenseSummary: "Income & Expense Summary",
+                    todayIncome: "Today's Income",
+                    todayExpense: "Today's Expense",
+                    monthIncome: "This Month's Income",
+                    monthExpense: "This Month's Expense",
+                    notepadTitle: "Quick Notes",
+                    notePlaceholder: "Write a quick note...",
+                    addBtn: "Add",
+                    noNotes: "No notes available",
+                    txHistory: "Transaction History",
+                    searchPlaceholder: "Search (note, category or source)...",
+                    typeLabel: "Type",
+                    allTypes: "All Types",
+                    incomeOpt: "Income",
+                    expenseOpt: "Expense",
+                    transferOpt: "Transfer",
+                    timeRangeLabel: "Time Range",
+                    allTime: "All Time",
+                    todayOpt: "Today",
+                    weekOpt: "This Week",
+                    monthOpt: "This Month",
+                    sourceLabelNav: "Source",
+                    allSources: "All Sources",
+                    categoryLabelNav: "Category",
+                    allCategories: "All Categories",
+                    receivableTitle: "To Receive (Receivable)",
+                    payableTitle: "To Pay (Payable)",
+                    loanHeaderTitle: "Loan & Debt Ledger",
+                    newLoanBtn: "+ New Loan/Debt",
+                    noLoans: "No loan records yet",
+                    statementReportTitle: "Statement & Report",
+                    printBtn: "🖨️ Print / Save PDF",
+                    selectTimeRange: "Select Time Range",
+                    thisMonthOpt: "This Month",
+                    lastMonthOpt: "Last Month",
+                    thisYearOpt: "This Year",
+                    customDateOpt: "Custom Date",
+                    startDate: "Start Date",
+                    endDate: "End Date",
+                    reportSummaryTitle: "Report Summary",
+                    totalIncomeRep: "Total Income:",
+                    totalExpenseRep: "Total Expense:",
+                    netSavingsRep: "Net Savings/Balance:",
+                    receivableRep: "Total Receivable:",
+                    payableRep: "Total Payable:",
+                    bankStatementTitle: "Bank Statement (Detailed Transactions)",
+                    settingsProfileTitle: "Settings & Profile",
+                    languageLabel: "Change Language",
+                    yourName: "Your Name",
+                    namePlaceholder: "Enter your name",
+                    mobileNo: "Mobile Number",
+                    profilePic: "Profile Picture (Optional)",
+                    saveProfileBtn: "Save Profile",
+                    negativeBalTitle: "Allow Negative Balance",
+                    negativeBalDesc: "Allow expenses/transfers even if balance is below zero",
+                    sourceMgmtTitle: "Sources Management",
+                    newSourcePlaceholder: "New source name...",
+                    categoryMgmtTitle: "Categories Management",
+                    newCategoryPlaceholder: "New category name...",
+                    dataResetTitle: "Data Reset",
+                    dataResetDesc: "Delete all transactions, loans, and profile data.",
+                    clearDataBtn: "Delete All Data",
+                    fabIncome: "➕ Income",
+                    fabExpense: "➖ Expense",
+                    fabTransfer: "🔄 Transfer",
+                    fabLoan: "🤝 Loan/Debt",
+                    navHome: "Home",
+                    navHistory: "History",
+                    navLoan: "Loans",
+                    navReport: "Report",
+                    navSettings: "Settings",
+                    newTxTitle: "New Transaction",
+                    amountLabel: "Amount (৳) *",
+                    sourceLabelModal: "Source *",
+                    toSourceLabel: "To Source *",
+                    categoryLabelModal: "Category *",
+                    otherCatLabel: "Enter other expense details",
+                    dateLabel: "Date *",
+                    timeLabel: "Time *",
+                    noteLabel: "Note (Optional)",
+                    noteDescPlaceholder: "Short description...",
+                    receiptLabel: "🧾 Attach Receipt/Memo (Optional)",
+                    cancelBtn: "Cancel",
+                    saveBtn: "Save",
+                    newLoanModalTitle: "Add New Loan/Debt",
+                    loanTypeLabel: "Transaction Type *",
+                    paboOpt: "To Receive (Receivable)",
+                    deboOpt: "To Pay (Payable)",
+                    personNameLabel: "Person Name *",
+                    mobileNoOptional: "Mobile Number (Optional)",
+                    receiptImgLabel: "Receipt Image (Optional)",
+                    noteDescLabel: "Note / Description (Optional)",
+                    receiptModalTitle: "🧾 Receipt Image",
+                    closeBtn: "Close"
+                }
+            };
+
+            const DEFAULT_SOURCES = ["হাতে ক্যাশ", "bKash", "Nagad", "Rocket", "Upay", "Bank", "অন্যান্য"];
+            const DEFAULT_CATEGORIES = ["খাবার", "যাতায়াত", "শিক্ষা", "মোবাইল/ইন্টারনেট", "চিকিৎসা", "পরিবার", "কেনাকাটা", "ইসলামিক/দান", "বিনোদন", "বিল", "ধার পরিশোধ", "অন্যান্য"];
+
+            let state = {
+                transactions: [],
+                loans: JSON.parse(localStorage.getItem('user_loans')) || [],
+                notes: JSON.parse(localStorage.getItem('user_notes')) || [],
+                sources: [],
+                categories: [],
+                profile: { name: '', phone: '', photo: '' },
+                settings: { theme: 'light', allowNegative: false, lang: 'bn' }
+            };
+
+            const elem = {
+                themeToggleBtn: document.getElementById('themeToggleBtn'),
+                themeIcon: document.getElementById('themeIcon'),
+                views: document.querySelectorAll('.app-view'),
+                navItems: document.querySelectorAll('.bottom-nav .nav-item'),
+                
+                todayIncomeText: document.getElementById('todayIncomeText'),
+                todayExpenseText: document.getElementById('todayExpenseText'),
+                monthIncomeText: document.getElementById('monthIncomeText'),
+                monthExpenseText: document.getElementById('monthExpenseText'),
+                sourcesList: document.getElementById('sourcesList'),
+
+                noteForm: document.getElementById('noteForm'),
+                noteInput: document.getElementById('noteInput'),
+                notesList: document.getElementById('notesList'),
+                emptyNoteMsg: document.getElementById('emptyNoteMsg'),
+
+                searchInput: document.getElementById('searchInput'),
+                typeFilter: document.getElementById('typeFilter'),
+                dateFilter: document.getElementById('dateFilter'),
+                sourceFilter: document.getElementById('sourceFilter'),
+                categoryFilter: document.getElementById('categoryFilter'),
+                transactionList: document.getElementById('transactionList'),
+
+                mainFab: document.getElementById('mainFab'),
+                fabOptions: document.getElementById('fabOptions'),
+
+                languageSelect: document.getElementById('languageSelect'),
+                allowNegativeToggle: document.getElementById('allowNegativeToggle'),
+                addSourceForm: document.getElementById('addSourceForm'),
+                newSourceName: document.getElementById('newSourceName'),
+                manageSourcesList: document.getElementById('manageSourcesList'),
+                addCategoryForm: document.getElementById('addCategoryForm'),
+                newCategoryName: document.getElementById('newCategoryName'),
+                manageCategoriesList: document.getElementById('manageCategoriesList'),
+                clearDataBtn: document.getElementById('clearDataBtn'),
+
+                profileForm: document.getElementById('profileForm'),
+                profName: document.getElementById('profName'),
+                profPhone: document.getElementById('profPhone'),
+                profImg: document.getElementById('profImg'),
+                profileDisplayName: document.getElementById('profileDisplayName'),
+                profileDisplayPhone: document.getElementById('profileDisplayPhone'),
+                profileDisplayImg: document.getElementById('profileDisplayImg'),
+
+                reportRangeSelect: document.getElementById('reportRangeSelect'),
+                customDateGroup: document.getElementById('customDateGroup'),
+                reportStartDate: document.getElementById('reportStartDate'),
+                reportEndDate: document.getElementById('reportEndDate'),
+                printReportBtn: document.getElementById('printReportBtn'),
+                reportTableContainer: document.getElementById('reportTableContainer'),
+                repIncome: document.getElementById('repIncome'),
+                repExpense: document.getElementById('repExpense'),
+                repNet: document.getElementById('repNet'),
+                repReceivable: document.getElementById('repReceivable'),
+                repPayable: document.getElementById('repPayable'),
+
+                transactionModal: document.getElementById('transactionModal'),
+                modalTitle: document.getElementById('modalTitle'),
+                transactionForm: document.getElementById('transactionForm'),
+                txId: document.getElementById('txId'),
+                txType: document.getElementById('txType'),
+                txAmount: document.getElementById('txAmount'),
+                txSource: document.getElementById('txSource'),
+                sourceGroup: document.getElementById('sourceGroup'),
+                sourceLabel: document.getElementById('sourceLabel'),
+                txToSource: document.getElementById('txToSource'),
+                toSourceGroup: document.getElementById('toSourceGroup'),
+                txCategory: document.getElementById('txCategory'),
+                categoryGroup: document.getElementById('categoryGroup'),
+                otherCategoryGroup: document.getElementById('otherCategoryGroup'),
+                txOtherCategory: document.getElementById('txOtherCategory'),
+                txReceipt: document.getElementById('txReceipt'),
+                txDate: document.getElementById('txDate'),
+                txTime: document.getElementById('txTime'),
+                txNote: document.getElementById('txNote'),
+
+                receiptModal: document.getElementById('receiptModal'),
+                receiptModalImg: document.getElementById('receiptModalImg')
+            };
+
+            // Loan View DOM Elements
+            const loanModal = document.getElementById('loan-modal');
+            const openModalBtn = document.getElementById('open-loan-modal');
+            const closeModalBtn = document.getElementById('close-modal');
+            const loanForm = document.getElementById('loan-form');
+            const loanList = document.getElementById('loan-list');
+            const emptyMsg = document.getElementById('empty-msg');
+            const receiptInput = document.getElementById('loan-receipt');
+            const receiptPreviewContainer = document.getElementById('receipt-preview-container');
+            const receiptPreview = document.getElementById('receipt-preview');
+
+            function init() {
+                loadStorage();
+                applyTheme(state.settings.theme);
+                applyLanguage(state.settings.lang);
+                setupEvents();
+                renderAll();
+            }
+
+            function loadStorage() {
+                try {
+                    const st = localStorage.getItem('hk_app_data');
+                    if (st) {
+                        const parsed = JSON.parse(st);
+                        state.transactions = parsed.transactions || [];
+                        state.sources = parsed.sources || [...DEFAULT_SOURCES];
+                        state.categories = parsed.categories || [...DEFAULT_CATEGORIES];
+                        state.profile = parsed.profile || { name: '', phone: '', photo: '' };
+                        state.settings = parsed.settings || { theme: 'light', allowNegative: false, lang: 'bn' };
+                    } else {
+                        state.sources = [...DEFAULT_SOURCES];
+                        state.categories = [...DEFAULT_CATEGORIES];
+                    }
+                    state.loans = JSON.parse(localStorage.getItem('user_loans')) || [];
+                    state.notes = JSON.parse(localStorage.getItem('user_notes')) || [];
+                } catch (e) {
+                    console.error("Storage Load Error", e);
+                }
+            }
+
+            function saveStorage() {
+                localStorage.setItem('hk_app_data', JSON.stringify(state));
+                localStorage.setItem('user_loans', JSON.stringify(state.loans));
+                localStorage.setItem('user_notes', JSON.stringify(state.notes));
+            }
+
+            function applyLanguage(lang) {
+                state.settings.lang = lang;
+                elem.languageSelect.value = lang;
+                document.documentElement.setAttribute('lang', lang);
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+                const dict = TRANSLATIONS[lang] || TRANSLATIONS.bn;
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (dict[key]) el.textContent = dict[key];
+                });
+                document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                    const key = el.getAttribute('data-translate-placeholder');
+                    if (dict[key]) el.placeholder = dict[key];
+                });
+            }
+
+            function calculateSourceBalance(sourceName, excludeTxId = null) {
+                let balance = 0;
+                state.transactions.forEach(tx => {
+                    if (excludeTxId && tx.id === excludeTxId) return;
+                    const amt = parseFloat(tx.amount) || 0;
+                    if (tx.type === 'INCOME' && tx.source === sourceName) balance += amt;
+                    if (tx.type === 'EXPENSE' && tx.source === sourceName) balance -= amt;
+                    if (tx.type === 'TRANSFER') {
+                        if (tx.source === sourceName) balance -= amt;
+                        if (tx.toSource === sourceName) balance += amt;
+                    }
+                });
+                return balance;
+            }
+
+            function calculateTotals() {
+                const today = getTodayStr();
+                const mRange = getMonthRange();
+                let todayInc = 0, todayExp = 0, monthInc = 0, monthExp = 0;
+
+                state.transactions.forEach(tx => {
+                    const amt = parseFloat(tx.amount) || 0;
+                    if (tx.date === today) {
+                        if (tx.type === 'INCOME') todayInc += amt;
+                        if (tx.type === 'EXPENSE') todayExp += amt;
+                    }
+                    if (tx.date >= mRange.start && tx.date <= mRange.end) {
+                        if (tx.type === 'INCOME') monthInc += amt;
+                        if (tx.type === 'EXPENSE') monthExp += amt;
+                    }
+                });
+
+                let totReceivable = 0, totPayable = 0;
+                state.loans.forEach(item => {
+                    const amt = parseFloat(item.amount) || 0;
+                    if (item.type === 'pabo') totReceivable += amt;
+                    else totPayable += amt;
+                });
+
+                return { todayInc, todayExp, monthInc, monthExp, totReceivable, totPayable };
+            }
+
+            function getTodayStr() { return new Date().toISOString().split('T')[0]; }
+
+            function formatDateToDDMMYY(dateStr) {
+                if (!dateStr) return '';
+                const parts = dateStr.split('-');
+                if(parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].substring(2)}`;
+                return dateStr;
+            }
+
+            function format12HourTime(timeStr) {
+                if(!timeStr) return '';
+                const [h, m] = timeStr.split(':');
+                let hours = parseInt(h);
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                return `${String(hours).padStart(2, '0')}:${m} ${ampm}`;
+            }
+
+            function getMonthRange() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const lastDay = new Date(year, now.getMonth() + 1, 0).getDate();
+                return { start: `${year}-${month}-01`, end: `${year}-${month}-${String(lastDay).padStart(2, '0')}` };
+            }
+
+            function formatCurrency(amount) {
+                return `৳${Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+
+            function formatNumberOnly(amount) {
+                return Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+            }
+
+            function renderAll() {
+                renderDashboard();
+                renderNotes();
+                renderHistory();
+                renderLoansUI();
+                renderProfile();
+                renderSettings();
+                renderReport();
+                populateDropdowns();
+            }
+
+            function renderDashboard() {
+                const totals = calculateTotals();
+                elem.todayIncomeText.textContent = formatCurrency(totals.todayInc);
+                elem.todayExpenseText.textContent = formatCurrency(totals.todayExp);
+                elem.monthIncomeText.textContent = formatCurrency(totals.monthInc);
+                elem.monthExpenseText.textContent = formatCurrency(totals.monthExp);
+
+                elem.sourcesList.innerHTML = '';
+                state.sources.forEach(src => {
+                    const bal = calculateSourceBalance(src);
+                    const div = document.createElement('div');
+                    div.className = 'source-item';
+                    div.innerHTML = `<strong>${escapeHtml(src)}</strong><span>${formatCurrency(bal)}</span>`;
+                    elem.sourcesList.appendChild(div);
+                });
+            }
+
+            function renderNotes() {
+                elem.notesList.innerHTML = '';
+                if (state.notes.length === 0) {
+                    elem.notesList.appendChild(elem.emptyNoteMsg);
+                    elem.emptyNoteMsg.classList.remove('hidden');
+                } else {
+                    elem.emptyNoteMsg.classList.add('hidden');
+                    state.notes.forEach(note => {
+                        const card = document.createElement('div');
+                        card.className = 'item-card';
+                        card.innerHTML = `
+                            <div class="item-details">
+                                <strong style="font-weight: normal;">${escapeHtml(note.text)}</strong>
+                                <span>📅 ${note.date}</span>
+                            </div>
+                            <div>
+                                <button onclick="deleteNote(${note.id})" class="action-btn" style="color:var(--expense-color);">🗑️</button>
+                            </div>
+                        `;
+                        elem.notesList.appendChild(card);
+                    });
+                }
+            }
+
+            window.deleteNote = function(id) {
+                state.notes = state.notes.filter(n => n.id !== id);
+                saveStorage();
+                renderNotes();
+            };
+
+            function renderHistory() {
+                const search = elem.searchInput.value.toLowerCase().trim();
+                const type = elem.typeFilter.value;
+                const range = elem.dateFilter.value;
+                const src = elem.sourceFilter.value;
+                const cat = elem.categoryFilter.value;
+                const today = getTodayStr();
+                const now = new Date();
+
+                const filtered = state.transactions.filter(tx => {
+                    if (type !== 'ALL' && tx.type !== type) return false;
+                    if (src !== 'ALL' && tx.source !== src && tx.toSource !== src) return false;
+                    if (cat !== 'ALL' && tx.category !== cat) return false;
+                    if (search) {
+                        const mNote = tx.note ? tx.note.toLowerCase().includes(search) : false;
+                        const mCat = tx.category ? tx.category.toLowerCase().includes(search) : false;
+                        const mSrc = tx.source ? tx.source.toLowerCase().includes(search) : false;
+                        if (!mNote && !mCat && !mSrc) return false;
+                    }
+                    if (range === 'TODAY' && tx.date !== today) return false;
+                    if (range === 'WEEK') {
+                        const diffDays = (now - new Date(tx.date)) / (1000 * 60 * 60 * 24);
+                        if (diffDays < 0 || diffDays > 7) return false;
+                    }
+                    if (range === 'MONTH') {
+                        const mr = getMonthRange();
+                        if (tx.date < mr.start || tx.date > mr.end) return false;
+                    }
+                    return true;
+                });
+
+                filtered.sort((a, b) => new Date(`${b.date}T${b.time || '00:00'}`) - new Date(`${a.date}T${a.time || '00:00'}`));
+
+                elem.transactionList.innerHTML = '';
+                if (filtered.length === 0) {
+                    elem.transactionList.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); font-size:0.85rem;">কোনো লেনদেন পাওয়া যায়নি।</div>';
+                    return;
+                }
+
+                filtered.forEach(tx => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+
+                    let title = tx.type === 'TRANSFER' 
+                        ? `${escapeHtml(tx.source)} ➔ ${escapeHtml(tx.toSource)}`
+                        : `${escapeHtml(tx.source)} • ${escapeHtml(tx.category || '')}`;
+
+                    let receiptBtn = tx.receipt ? `<br><button class="btn-receipt-view view-receipt-btn" data-id="${tx.id}">🧾 রশিদ দেখুন</button>` : '';
+
+                    card.innerHTML = `
+                        <div class="item-details">
+                            <strong>${title}</strong>
+                            <span>📅 ${tx.date} ${tx.time ? '🕒 ' + format12HourTime(tx.time) : ''} ${tx.note ? '• ' + escapeHtml(tx.note) : ''}</span>
+                            ${receiptBtn}
+                        </div>
+                        <div class="item-amount-group">
+                            <div class="item-amount ${tx.type}">
+                                ${tx.type === 'EXPENSE' ? '-' : (tx.type === 'INCOME' ? '+' : '')}${formatCurrency(tx.amount)}
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit-tx" data-id="${tx.id}">✏️ এডিট</button>
+                                <button class="action-btn delete-tx" data-id="${tx.id}">🗑️ ডিলেট</button>
+                            </div>
+                        </div>
+                    `;
+                    elem.transactionList.appendChild(card);
+                });
+            }
+
+            /* Loan Management Functions */
+            function renderLoansUI() {
+                loanList.innerHTML = '';
+                if (state.loans.length === 0) {
+                    loanList.appendChild(emptyMsg);
+                    emptyMsg.classList.remove('hidden');
+                } else {
+                    emptyMsg.classList.add('hidden');
+                    state.loans.forEach(item => {
+                        const isPabo = item.type === 'pabo';
+                        const card = document.createElement('div');
+                        card.className = `p-4 rounded-lg border flex justify-between items-center ${isPabo ? 'bg-blue-50/50 border-blue-200' : 'bg-red-50/50 border-red-200'}`;
+                        
+                        card.innerHTML = `
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-gray-800">${escapeHtml(item.person)}</h4>
+                                    <span class="text-xs px-2 py-0.5 rounded-full ${isPabo ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'} font-semibold">
+                                        ${isPabo ? 'পাবো' : 'দেবো'}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500">${item.date} ${item.phone ? '• ' + escapeHtml(item.phone) : ''}</p>
+                                ${item.note ? `<p class="text-xs text-gray-600 italic mt-1">${escapeHtml(item.note)}</p>` : ''}
+                                ${item.receipt ? `<button onclick="viewLoanReceipt('${item.id}')" class="text-xs text-blue-500 underline mt-1 block">রশিদ দেখুন</button>` : ''}
+                            </div>
+                            <div class="text-right flex items-center gap-2">
+                                <span class="font-bold text-lg ${isPabo ? 'text-blue-600' : 'text-red-600'}">${formatCurrency(item.amount)}</span>
+                                <button onclick="editLoan(${item.id})" class="text-blue-500 hover:text-blue-700 text-sm font-semibold px-1">সম্পাদনা</button>
+                                <button onclick="deleteLoan(${item.id})" class="text-red-500 hover:text-red-700 text-sm font-bold px-1">✕</button>
+                            </div>
+                        `;
+                        loanList.appendChild(card);
+                    });
+                }
+
+                const totals = calculateTotals();
+                document.getElementById('total-receivable').innerText = formatCurrency(totals.totReceivable);
+                document.getElementById('total-payable').innerText = formatCurrency(totals.totPayable);
+            }
+
+            window.viewLoanReceipt = function(id) {
+                const item = state.loans.find(l => l.id == id);
+                if(item && item.receipt) {
+                    elem.receiptModalImg.src = item.receipt;
+                    elem.receiptModal.classList.remove('hidden');
+                }
+            };
+
+            openModalBtn.addEventListener('click', () => {
+                loanForm.reset();
+                document.getElementById('loan-id').value = '';
+                document.getElementById('existing-receipt').value = '';
+                receiptPreviewContainer.classList.add('hidden');
+                document.getElementById('modal-title').innerText = 'নতুন ধার/পাওনা যোগ করুন';
+                document.getElementById('loan-date').valueAsDate = new Date();
+                loanModal.classList.remove('hidden');
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                loanModal.classList.add('hidden');
+            });
+
+            loanModal.addEventListener('click', (e) => {
+                if (e.target === loanModal) loanModal.classList.add('hidden');
+            });
+
+            loanForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const id = document.getElementById('loan-id').value;
+                const type = document.getElementById('loan-type').value;
+                const person = document.getElementById('loan-person').value.trim();
+                const amount = parseFloat(document.getElementById('loan-amount').value);
+                const phone = document.getElementById('loan-phone').value.trim();
+                const date = document.getElementById('loan-date').value;
+                const note = document.getElementById('loan-note').value.trim();
+                let receiptBase64 = document.getElementById('existing-receipt').value;
+
+                if (receiptInput.files && receiptInput.files[0]) {
+                    receiptBase64 = await convertBase64(receiptInput.files[0]);
+                }
+
+                if (id) {
+                    state.loans = state.loans.map(item => item.id == id ? { id: Number(id), type, person, amount, phone, date, note, receipt: receiptBase64 } : item);
+                } else {
+                    const newLoan = { id: Date.now(), type, person, amount, phone, date, note, receipt: receiptBase64 };
+                    state.loans.push(newLoan);
+                }
+
+                saveStorage();
+                renderAll();
+                loanModal.classList.add('hidden');
+            });
+
+            function convertBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const fileReader = new FileReader();
+                    fileReader.readAsDataURL(file);
+                    fileReader.onload = () => resolve(fileReader.result);
+                    fileReader.onerror = (error) => reject(error);
+                });
+            }
+
+            window.editLoan = function(id) {
+                const item = state.loans.find(l => l.id == id);
+                if (!item) return;
+
+                document.getElementById('loan-id').value = item.id;
+                document.getElementById('loan-type').value = item.type;
+                document.getElementById('loan-person').value = item.person;
+                document.getElementById('loan-amount').value = item.amount;
+                document.getElementById('loan-phone').value = item.phone || '';
+                document.getElementById('loan-date').value = item.date;
+                document.getElementById('loan-note').value = item.note || '';
+                document.getElementById('existing-receipt').value = item.receipt || '';
+
+                if (item.receipt) {
+                    receiptPreview.src = item.receipt;
+                    receiptPreviewContainer.classList.remove('hidden');
+                } else {
+                    receiptPreviewContainer.classList.add('hidden');
+                }
+
+                document.getElementById('modal-title').innerText = 'ধার/পাওনা সম্পাদনা করুন';
+                loanModal.classList.remove('hidden');
+            };
+
+            window.deleteLoan = function(id) {
+                if (confirm('আপনি কি এই হিসাবটি মুছে ফেলতে চান?')) {
+                    state.loans = state.loans.filter(item => item.id != id);
+                    saveStorage();
+                    renderAll();
+                }
+            };
+
+            function renderProfile() {
+                const prof = state.profile;
+                elem.profileDisplayName.textContent = prof.name || 'ব্যবহারকারী';
+                elem.profileDisplayPhone.textContent = prof.phone ? `মোবাইল: ${prof.phone}` : 'মোবাইল: -';
+                if (prof.photo) elem.profileDisplayImg.src = prof.photo;
+                elem.profName.value = prof.name || '';
+                elem.profPhone.value = prof.phone || '';
+            }
+
+            function renderSettings() {
+                elem.allowNegativeToggle.checked = state.settings.allowNegative;
+                elem.manageSourcesList.innerHTML = state.sources.map(s => `
+                    <div class="tag-item"><span>${escapeHtml(s)}</span><span class="delete-tag" data-type="SOURCE" data-name="${escapeHtml(s)}">&times;</span></div>
+                `).join('');
+                elem.manageCategoriesList.innerHTML = state.categories.map(c => `
+                    <div class="tag-item"><span>${escapeHtml(c)}</span><span class="delete-tag" data-type="CATEGORY" data-name="${escapeHtml(c)}">&times;</span></div>
+                `).join('');
+            }
+
+            function renderReport() {
+                const range = elem.reportRangeSelect.value;
+                let start = '', end = '';
+                const today = getTodayStr();
+
+                if (range === 'TODAY') start = end = today;
+                else if (range === 'WEEK') {
+                    const now = new Date();
+                    start = new Date(now.setDate(now.getDate() - 7)).toISOString().split('T')[0];
+                    end = today;
+                } else if (range === 'THIS_MONTH') {
+                    const mr = getMonthRange(); start = mr.start; end = mr.end;
+                } else if (range === 'LAST_MONTH') {
+                    const now = new Date();
+                    start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
+                    end = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
+                } else if (range === 'THIS_YEAR') {
+                    const y = new Date().getFullYear(); start = `${y}-01-01`; end = `${y}-12-31`;
+                } else if (range === 'CUSTOM') {
+                    start = elem.reportStartDate.value; end = elem.reportEndDate.value;
+                }
+
+                document.getElementById('printProfileName').textContent = `Customer: ${state.profile.name || 'N/A'}`;
+                document.getElementById('printDateRange').textContent = `Period: ${start || 'Start'} to ${end || 'End'}`;
+
+                let totalWithdraw = 0, totalDeposit = 0;
+                const sortedTx = [...state.transactions].sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
+
+                const filteredTx = sortedTx.filter(t => {
+                    if (start && t.date < start) return false;
+                    if (end && t.date > end) return false;
+                    return true;
+                });
+
+                let runningBalance = 0;
+
+                let tableHtml = `
+                    <table class="bank-statement-table">
+                        <thead>
+                            <tr>
+                                <th>সময় (Time)</th>
+                                <th>তারিখ (Date)</th>
+                                <th>বিবরণ (Particulars)</th>
+                                <th>লেনদেন আইডি</th>
+                                <th class="num-col">ডেবিট (-)</th>
+                                <th class="num-col">ক্রেডিট (+)</th>
+                                <th class="num-col">ব্যালেন্স</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (filteredTx.length === 0) {
+                    tableHtml += `<tr><td colspan="7" style="text-align:center;">কোনো লেনদেনের ডাটা পাওয়া যায়নি।</td></tr>`;
+                } else {
+                    filteredTx.forEach((tx, idx) => {
+                        const amt = parseFloat(tx.amount) || 0;
+                        let withdraw = 0, deposit = 0;
+
+                        if (tx.type === 'EXPENSE') { withdraw = amt; totalWithdraw += amt; runningBalance -= amt; }
+                        else if (tx.type === 'INCOME') { deposit = amt; totalDeposit += amt; runningBalance += amt; }
+                        else if (tx.type === 'TRANSFER') { withdraw = amt; totalWithdraw += amt; runningBalance -= amt; }
+
+                        let particulars = tx.type === 'TRANSFER'
+                            ? `TRANSFER [From: ${tx.source} To: ${tx.toSource}] ${tx.note ? '- ' + tx.note : ''}`
+                            : `${tx.category || 'General'} | Source: ${tx.source} ${tx.note ? '- ' + tx.note : ''}`;
+
+                        const instNo = `TXN-${String(tx.id).replace(/\D/g, '').slice(-6) || (100000 + idx)}`;
+
+                        tableHtml += `
+                            <tr>
+                                <td>${format12HourTime(tx.time)}</td>
+                                <td>${formatDateToDDMMYY(tx.date)}</td>
+                                <td>${escapeHtml(particulars)}</td>
+                                <td>${instNo}</td>
+                                <td class="num-col">${withdraw > 0 ? formatNumberOnly(withdraw) : '0.00'}</td>
+                                <td class="num-col">${deposit > 0 ? formatNumberOnly(deposit) : '0.00'}</td>
+                                <td class="num-col">${formatNumberOnly(runningBalance)}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                tableHtml += `
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align:right; font-weight:bold;">মোট সর্বমোট</td>
+                                <td class="num-col" style="font-weight:bold;">${formatNumberOnly(totalWithdraw)}</td>
+                                <td class="num-col" style="font-weight:bold;">${formatNumberOnly(totalDeposit)}</td>
+                                <td class="num-col" style="font-weight:bold;">${formatNumberOnly(runningBalance)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                `;
+
+                elem.reportTableContainer.innerHTML = tableHtml;
+                elem.repIncome.textContent = formatCurrency(totalDeposit);
+                elem.repExpense.textContent = formatCurrency(totalWithdraw);
+                elem.repNet.textContent = formatCurrency(totalDeposit - totalWithdraw);
+
+                const totals = calculateTotals();
+                elem.repReceivable.textContent = formatCurrency(totals.totReceivable);
+                elem.repPayable.textContent = formatCurrency(totals.totPayable);
+            }
+
+            function populateDropdowns() {
+                elem.txSource.innerHTML = state.sources.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+                elem.txToSource.innerHTML = state.sources.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+                elem.txCategory.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+
+                const sVal = elem.sourceFilter.value;
+                elem.sourceFilter.innerHTML = '<option value="ALL">সব উৎস</option>' + state.sources.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+                elem.sourceFilter.value = state.sources.includes(sVal) ? sVal : 'ALL';
+
+                const cVal = elem.categoryFilter.value;
+                elem.categoryFilter.innerHTML = '<option value="ALL">সব ক্যাটাগরি</option>' + state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+                elem.categoryFilter.value = state.categories.includes(cVal) ? cVal : 'ALL';
+            }
+
+            function setupEvents() {
+                elem.themeToggleBtn.addEventListener('click', () => {
+                    state.settings.theme = state.settings.theme === 'light' ? 'dark' : 'light';
+                    applyTheme(state.settings.theme);
+                    saveStorage();
+                });
+
+                elem.languageSelect.addEventListener('change', (e) => {
+                    applyLanguage(e.target.value);
+                    saveStorage();
+                });
+
+                elem.navItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const target = item.getAttribute('data-view');
+                        if (target) switchView(target);
+                    });
+                });
+
+                elem.mainFab.addEventListener('click', () => elem.fabOptions.classList.toggle('hidden'));
+
+                document.querySelectorAll('.fab-option').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const act = e.currentTarget.getAttribute('data-action');
+                        elem.fabOptions.classList.add('hidden');
+                        if (act === 'LOAN') {
+                            openModalBtn.click();
+                        } else {
+                            openTxModal(act);
+                        }
+                    });
+                });
+
+                elem.noteForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const val = elem.noteInput.value.trim();
+                    if(val) {
+                        state.notes.push({ id: Date.now(), text: val, date: getTodayStr() });
+                        elem.noteInput.value = '';
+                        saveStorage();
+                        renderNotes();
+                    }
+                });
+
+                elem.txCategory.addEventListener('change', () => {
+                    if (elem.txCategory.value === 'অন্যান্য') {
+                        elem.otherCategoryGroup.classList.remove('hidden');
+                    } else {
+                        elem.otherCategoryGroup.classList.add('hidden');
+                    }
+                });
+
+                document.querySelectorAll('.closeModalBtn').forEach(b => b.addEventListener('click', () => elem.transactionModal.classList.add('hidden')));
+                document.querySelectorAll('.closeReceiptModalBtn').forEach(b => b.addEventListener('click', () => elem.receiptModal.classList.add('hidden')));
+
+                elem.transactionForm.addEventListener('submit', handleTxSubmit);
+
+                [elem.searchInput, elem.typeFilter, elem.dateFilter, elem.sourceFilter, elem.categoryFilter].forEach(el => {
+                    el.addEventListener('change', renderHistory);
+                    el.addEventListener('input', renderHistory);
+                });
+
+                elem.transactionList.addEventListener('click', e => {
+                    const id = e.target.getAttribute('data-id');
+                    if (e.target.classList.contains('edit-tx')) editTx(id);
+                    if (e.target.classList.contains('delete-tx')) deleteTx(id);
+                    if (e.target.classList.contains('view-receipt-btn')) viewReceipt(id);
+                });
+
+                elem.allowNegativeToggle.addEventListener('change', (e) => {
+                    state.settings.allowNegative = e.target.checked;
+                    saveStorage();
+                });
+
+                elem.addSourceForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    const val = elem.newSourceName.value.trim();
+                    if (val && !state.sources.includes(val)) {
+                        state.sources.push(val);
+                        elem.newSourceName.value = '';
+                        saveStorage();
+                        renderAll();
+                    }
+                });
+
+                elem.addCategoryForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    const val = elem.newCategoryName.value.trim();
+                    if (val && !state.categories.includes(val)) {
+                        state.categories.push(val);
+                        elem.newCategoryName.value = '';
+                        saveStorage();
+                        renderAll();
+                    }
+                });
+
+                document.addEventListener('click', e => {
+                    if (e.target.classList.contains('delete-tag')) {
+                        const type = e.target.getAttribute('data-type');
+                        const name = e.target.getAttribute('data-name');
+                        if (type === 'SOURCE') deleteSource(name);
+                        if (type === 'CATEGORY') deleteCategory(name);
+                    }
+                });
+
+                elem.profileForm.addEventListener('submit', handleProfileSubmit);
+
+                elem.reportRangeSelect.addEventListener('change', () => {
+                    if (elem.reportRangeSelect.value === 'CUSTOM') {
+                        elem.customDateGroup.classList.remove('hidden');
+                    } else {
+                        elem.customDateGroup.classList.add('hidden');
+                    }
+                    renderReport();
+                });
+                elem.reportStartDate.addEventListener('change', renderReport);
+                elem.reportEndDate.addEventListener('change', renderReport);
+                elem.printReportBtn.addEventListener('click', () => window.print());
+
+                elem.clearDataBtn.addEventListener('click', handleClearData);
+            }
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                elem.themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+
+            function switchView(id) {
+                elem.views.forEach(v => v.classList.remove('active'));
+                elem.navItems.forEach(i => i.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+                const btn = document.querySelector(`.bottom-nav .nav-item[data-view="${id}"]`);
+                if (btn) btn.classList.add('active');
+            }
+
+            function openTxModal(type, tx = null) {
+                populateDropdowns();
+                elem.transactionForm.reset();
+                elem.otherCategoryGroup.classList.add('hidden');
+
+                const now = new Date();
+                elem.txDate.value = tx ? tx.date : now.toISOString().split('T')[0];
+                elem.txTime.value = tx ? tx.time : now.toTimeString().split(' ')[0].substring(0, 5);
+                elem.txType.value = type;
+                elem.txId.value = tx ? tx.id : '';
+
+                if (type === 'TRANSFER') {
+                    elem.modalTitle.textContent = tx ? 'ট্রান্সফার এডিট' : 'নতুন ট্রান্সফার';
+                    elem.sourceLabel.textContent = 'কোথা থেকে পাঠাবেন *';
+                    elem.toSourceGroup.classList.remove('hidden');
+                    elem.categoryGroup.classList.add('hidden');
+                    elem.txCategory.removeAttribute('required');
+                } else {
+                    elem.modalTitle.textContent = tx ? 'লেনদেন এডিট' : (type === 'INCOME' ? 'নতুন আয় যোগ' : 'নতুন খরচ যোগ');
+                    elem.sourceLabel.textContent = 'উৎস *';
+                    elem.toSourceGroup.classList.add('hidden');
+                    elem.categoryGroup.classList.remove('hidden');
+                    elem.txCategory.setAttribute('required', 'true');
+                }
+
+                if (tx) {
+                    elem.txAmount.value = tx.amount;
+                    elem.txSource.value = tx.source;
+                    if (tx.toSource) elem.txToSource.value = tx.toSource;
+                    if (tx.category) {
+                        if (state.categories.includes(tx.category)) {
+                            elem.txCategory.value = tx.category;
+                        } else {
+                            elem.txCategory.value = 'অন্যান্য';
+                            elem.otherCategoryGroup.classList.remove('hidden');
+                            elem.txOtherCategory.value = tx.category;
+                        }
+                    }
+                    elem.txNote.value = tx.note || '';
+                }
+
+                elem.transactionModal.classList.remove('hidden');
+            }
+
+            function handleTxSubmit(e) {
+                e.preventDefault();
+                const id = elem.txId.value || 'tx_' + Date.now();
+                const type = elem.txType.value;
+                const amount = parseFloat(elem.txAmount.value);
+                const source = elem.txSource.value;
+                const toSource = elem.txToSource.value;
+                let category = elem.txCategory.value;
+                const otherCat = elem.txOtherCategory.value.trim();
+                const date = elem.txDate.value;
+                const time = elem.txTime.value;
+                const note = elem.txNote.value.trim();
+
+                if (category === 'অন্যান্য' && otherCat !== '') {
+                    category = otherCat;
+                }
+
+                if (type === 'TRANSFER' && source === toSource) {
+                    alert('একই উৎসের মধ্যে ট্রান্সফার করা যাবে না।'); return;
+                }
+
+                if (!state.settings.allowNegative && (type === 'EXPENSE' || type === 'TRANSFER')) {
+                    const bal = calculateSourceBalance(source, elem.txId.value || null);
+                    if (amount > bal) {
+                        alert(`পর্যাপ্ত ব্যালেন্স নেই! "${source}"-এ বর্তমান ব্যালেন্স: ${formatCurrency(bal)}`);
+                        return;
+                    }
+                }
+
+                const file = elem.txReceipt.files[0];
+                const existingTx = state.transactions.find(t => t.id === id);
+                let receiptData = existingTx ? existingTx.receipt : null;
+
+                const saveTransaction = (receipt) => {
+                    const txObj = {
+                        id, type, amount, source,
+                        toSource: type === 'TRANSFER' ? toSource : null,
+                        category: type !== 'TRANSFER' ? category : null,
+                        date, time, note, receipt
+                    };
+
+                    const idx = state.transactions.findIndex(t => t.id === id);
+                    if (idx > -1) state.transactions[idx] = txObj;
+                    else state.transactions.push(txObj);
+
+                    saveStorage();
+                    elem.transactionModal.classList.add('hidden');
+                    renderAll();
+                };
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt) {
+                        saveTransaction(evt.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    saveTransaction(receiptData);
+                }
+            }
+
+            function viewReceipt(id) {
+                const tx = state.transactions.find(t => t.id === id);
+                if (tx && tx.receipt) {
+                    elem.receiptModalImg.src = tx.receipt;
+                    elem.receiptModal.classList.remove('hidden');
+                }
+            }
+
+            function editTx(id) {
+                const tx = state.transactions.find(t => t.id === id);
+                if (tx) openTxModal(tx.type, tx);
+            }
+
+            function deleteTx(id) {
+                if (confirm('আপনি কি এই লেনদেনটি মুছে ফেলতে চান?')) {
+                    state.transactions = state.transactions.filter(t => t.id !== id);
+                    saveStorage();
+                    renderAll();
+                }
+            }
+
+            function handleProfileSubmit(e) {
+                e.preventDefault();
+                state.profile.name = elem.profName.value.trim();
+                state.profile.phone = elem.profPhone.value.trim();
+
+                const file = elem.profImg.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        state.profile.photo = evt.target.result;
+                        saveStorage();
+                        renderAll();
+                        alert('প্রোফাইল আপডেট হয়েছে!');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    saveStorage();
+                    renderAll();
+                    alert('প্রোফাইল আপডেট হয়েছে!');
+                }
+            }
+
+            function deleteSource(name) {
+                if (confirm(`আপনি কি "${name}" উৎসটি মুছে ফেলতে চান?`)) {
+                    state.sources = state.sources.filter(s => s !== name);
+                    saveStorage();
+                    renderAll();
+                }
+            }
+
+            function deleteCategory(name) {
+                if (confirm(`আপনি কি "${name}" ক্যাটাগরিটি মুছে ফেলতে চান?`)) {
+                    state.categories = state.categories.filter(c => c !== name);
+                    saveStorage();
+                    renderAll();
+                }
+            }
+
+            function handleClearData() {
+                if (confirm('আপনি কি নিশ্চিত যে সমস্ত ডাটা স্থায়ীভাবে মুছে ফেলতে চান?')) {
+                    if (confirm('সব হিসাব ও প্রোফাইল মুছে ফেলা হবে। কোনো তথ্য ফেরত পাওয়া যাবে না!')) {
+                        localStorage.removeItem('hk_app_data');
+                        localStorage.removeItem('user_loans');
+                        localStorage.removeItem('user_notes');
+                        state = {
+                            transactions: [],
+                            loans: [],
+                            notes: [],
+                            sources: [...DEFAULT_SOURCES],
+                            categories: [...DEFAULT_CATEGORIES],
+                            profile: { name: '', phone: '', photo: '' },
+                            settings: { theme: 'light', allowNegative: false, lang: 'bn' }
+                        };
+                        saveStorage();
+                        renderAll();
+                        alert('সমস্ত ডাটা সফলভাবে মুছে ফেলা হয়েছে।');
+                    }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
+
+        })();
+    </script>
+</body>
+</html>
