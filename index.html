@@ -150,36 +150,6 @@
             position: absolute;
             right: 16px;
         }
-        
-        .header-left-actions {
-            position: absolute;
-            left: 16px;
-            display: flex;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .website-link {
-            font-size: 0.7rem;
-            color: var(--primary);
-            text-decoration: none;
-            padding: 4px 10px;
-            border: 1px solid var(--primary);
-            border-radius: 20px;
-            font-weight: 600;
-            transition: all 0.2s;
-            text-align: center;
-            line-height: 1.2;
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .website-link:hover {
-            background-color: var(--primary);
-            color: #ffffff;
-        }
 
         .icon-btn {
             background: none;
@@ -507,15 +477,9 @@
 
     <!-- Header Bar -->
     <header class="app-header">
-        <div class="header-left-actions">
-            <a href="https://salmanfarshi1630.github.io/" target="_blank" class="website-link">
-                <span style="font-size: 0.7rem; line-height: 1.1;">আমার</span>
-                <span style="font-size: 0.7rem; line-height: 1.1;" data-translate="myWebsite">ওয়েবসাইট</span>
-            </a>
-        </div>
         <div class="header-brand">
             <div class="logo-container" id="logoContainer">
-                <img src="https://i.ibb.co.com/HDkwQdny/logo.png" alt="লোগো" id="appLogoImg">
+               <img src="https://i.ibb.co/Mxvjc5dY/Whats-App-Image-2026-09-11-at-7-00-30-PM.jpg" alt="হাত খরচ লোগো" id="appLogoImg">
             </div>
             <div class="header-title">
                 <h1 id="headerAppName" data-translate="appName">হাত-খরচ</h1>
@@ -619,7 +583,7 @@
             <div id="transactionList" class="item-list"></div>
         </section>
 
-        <!-- NOTE VIEW (Replacing Loan View position) -->
+        <!-- NOTE VIEW -->
         <section id="loanView" class="app-view">
             <div class="section-header"><h3 data-translate="notepadTitle">নোট প্যাড (Quick Notes)</h3></div>
             <div class="card">
@@ -684,13 +648,20 @@
         <section id="settingsView" class="app-view">
             <div class="section-header"><h3 data-translate="settingsProfileTitle">সেটিংস ও প্রোফাইল</h3></div>
             
+            <!-- Website Visit Card -->
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(217, 119, 6, 0.08) 100%); border: 1px solid var(--primary);">
+                <p style="font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">বিস্তারিত জানতে ভিজিট করুন আমার ওয়েবসাইট</p>
+                <a href="https://salmanfarshi1630.github.io/" target="_blank" class="btn btn-primary" style="display: inline-block; text-decoration: none; width: 100%; text-align: center;">
+                    🌐 ভিজিট ওয়েবসাইট
+                </a>
+            </div>
+
             <!-- Language Settings Card -->
             <div class="card">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="languageSelect" style="font-weight: bold; font-size: 0.9rem; color: var(--text-main);" data-translate="languageLabel">ভাষা পরিবর্তন করুন (Language)</label>
                     <select id="languageSelect" class="form-control" style="margin-top: 6px;">
                         <option value="bn">বাংলা (Bengali)</option>
-                        <option value="ar">العربية (Arabic)</option>
                         <option value="en">English</option>
                     </select>
                 </div>
@@ -920,7 +891,6 @@
             const TRANSLATIONS = {
                 bn: {
                     appName: "হাত-খরচ",
-                    myWebsite: "ওয়েবসাইট",
                     myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "পরম করুণাময়, অতি দয়ালু আল্লাহর নামে",
                     quranHeader: "📖 কুরআনের মহান উপদেশ",
@@ -1022,113 +992,8 @@
                     receiptModalTitle: "🧾 রশিদ / মেমোর ছবি",
                     closeBtn: "বন্ধ করুন"
                 },
-                ar: {
-                    appName: "مصروفات شخصية",
-                    myWebsite: "موقع الكتروني",
-                    myWebsiteSub: "Personal Money Manager",
-                    bismillahMeaning: "بسم الله الرحمن الرحيم",
-                    quranHeader: "📖 نصيحة قرآنية عظيمة",
-                    quranText: "“وَلَا تُسْرِفُوا ۚ إِنَّهُ لَا يُحِبُّ الْمُسْرِفِينَ”",
-                    quranRef: "— سورة الأعراف (٧:٣١)",
-                    moneySources: "مصادر الأموال",
-                    incomeExpenseSummary: "ملخص الدخل والمصروفات",
-                    todayIncome: "دخل اليوم",
-                    todayExpense: "مصروف اليوم",
-                    monthIncome: "دخل هذا الشهر",
-                    monthExpense: "مصروف هذا الشهر",
-                    notepadTitle: "مفكرة سريعة (Quick Notes)",
-                    notePlaceholder: "اكتب ملاحظة عاجلة...",
-                    addBtn: "إضافة",
-                    noNotes: "لا توجد ملاحظات",
-                    txHistory: "سجل المعاملات",
-                    searchPlaceholder: "بحث (ملاحظة، فئة، أو مصدر)...",
-                    typeLabel: "النوع",
-                    allTypes: "كل الأنواع",
-                    incomeOpt: "دخل",
-                    expenseOpt: "مصروف",
-                    transferOpt: "تحويل",
-                    timeRangeLabel: "النطاق الزمني",
-                    allTime: "كل الأوقات",
-                    todayOpt: "اليوم",
-                    weekOpt: "هذا الأسبوع",
-                    monthOpt: "هذا الشهر",
-                    sourceLabelNav: "المصدر",
-                    allSources: "كل المصادر",
-                    categoryLabelNav: "الفئة",
-                    allCategories: "كل الفئات",
-                    receivableTitle: "له عندي / لي (مستحقات)",
-                    payableTitle: "علي (ديون)",
-                    loanHeaderTitle: "حساب الديون والمستحقات",
-                    newLoanBtn: "+ دين / مستحق جديد",
-                    noLoans: "لا توجد حسابات ديون حتى الآن",
-                    statementReportTitle: "البيان والتقرير",
-                    printBtn: "🖨️ طباعة / حفظ PDF",
-                    selectTimeRange: "اختر النطاق الزمني",
-                    thisMonthOpt: "هذا الشهر",
-                    lastMonthOpt: "الشهر الماضي",
-                    thisYearOpt: "هذا العام",
-                    customDateOpt: "تاريخ مخصص",
-                    startDate: "تاريخ البداية",
-                    endDate: "تاريخ النهاية",
-                    reportSummaryTitle: "ملخص التقرير",
-                    totalIncomeRep: "إجمالي الدخل:",
-                    totalExpenseRep: "إجمالي المصروفات:",
-                    netSavingsRep: "صافي التوفير / الرصيد:",
-                    receivableRep: "المستحقات (لي):",
-                    payableRep: "الديون (عليّ):",
-                    bankStatementTitle: "كشف الحساب البنكي (المعاملات التفصيلية)",
-                    settingsProfileTitle: "الإعدادات والملف الشخصي",
-                    languageLabel: "تغيير اللغة (Language)",
-                    yourName: "اسمك",
-                    namePlaceholder: "أدخل اسمك",
-                    mobileNo: "رقم الجوال",
-                    profilePic: "صورة الملف الشخصي (اختياري)",
-                    saveProfileBtn: "حفظ الملف الشخصي",
-                    negativeBalTitle: "السماح بالرصيد السلبي",
-                    negativeBalDesc: "السماح بالمصروفات أو التحويل حتى لو كان الرصيد أقل من الصفر",
-                    sourceMgmtTitle: "إدارة المصادر",
-                    newSourcePlaceholder: "اسم مصدر جديد...",
-                    categoryMgmtTitle: "إدارة الفئات",
-                    newCategoryPlaceholder: "اسم فئة جديدة...",
-                    dataResetTitle: "إعادة ضبط البيانات",
-                    dataResetDesc: "حذف جميع المعاملات، الديون، وبيانات الملف الشخصي.",
-                    clearDataBtn: "حذف جميع البيانات",
-                    fabIncome: "➕ دخل",
-                    fabExpense: "➖ مصروف",
-                    fabTransfer: "🔄 تحويل",
-                    fabLoan: "🤝 دين/مستحق",
-                    navHome: "الرئيسية",
-                    navHistory: "السجل",
-                    navNote: "ملاحظات",
-                    navReport: "التقرير",
-                    navSettings: "الإعدادات",
-                    newTxTitle: "معاملة جديدة",
-                    amountLabel: "المبلغ (৳) *",
-                    sourceLabelModal: "المصدر *",
-                    toSourceLabel: "إلى أي مصدر تحويل *",
-                    categoryLabelModal: "الفئة *",
-                    otherCatLabel: "أدخل تفاصيل مصروف آخر",
-                    dateLabel: "التاريخ *",
-                    timeLabel: "الوقت *",
-                    noteLabel: "ملاحظة (اختياري)",
-                    noteDescPlaceholder: "تفاصيل مختصرة...",
-                    receiptLabel: "🧾 إرفاق إيصال / صورة (اختياري)",
-                    cancelBtn: "إلغاء",
-                    saveBtn: "حفظ",
-                    newLoanModalTitle: "إضافة دين / مستحق جديد",
-                    loanTypeLabel: "نوع المعاملة *",
-                    paboOpt: "لي (مستحق)",
-                    deboOpt: "عليّ (دين)",
-                    personNameLabel: "اسم الشخص *",
-                    mobileNoOptional: "رقم الجوال (اختياري)",
-                    receiptImgLabel: "صورة الإيصال (اختياري)",
-                    noteDescLabel: "ملاحظة / تفاصيل (اختياري)",
-                    receiptModalTitle: "🧾 صورة الإيصال",
-                    closeBtn: "إغلاق"
-                },
                 en: {
                     appName: "Hat-Khoroch",
-                    myWebsite: "Website",
                     myWebsiteSub: "Personal Money Manager",
                     bismillahMeaning: "In the name of Allah, the Most Gracious, the Most Merciful",
                     quranHeader: "📖 Great Quranic Advice",
@@ -1354,6 +1219,7 @@
                         state.categories = parsed.categories || [...DEFAULT_CATEGORIES];
                         state.profile = parsed.profile || { name: '', phone: '', photo: '' };
                         state.settings = parsed.settings || { theme: 'light', allowNegative: false, lang: 'bn' };
+                        if (state.settings.lang === 'ar') state.settings.lang = 'bn';
                     } else {
                         state.sources = [...DEFAULT_SOURCES];
                         state.categories = [...DEFAULT_CATEGORIES];
@@ -1375,7 +1241,7 @@
                 state.settings.lang = lang;
                 elem.languageSelect.value = lang;
                 document.documentElement.setAttribute('lang', lang);
-                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                document.documentElement.dir = 'ltr';
 
                 const dict = TRANSLATIONS[lang] || TRANSLATIONS.bn;
                 document.querySelectorAll('[data-translate]').forEach(el => {
